@@ -1,0 +1,25 @@
+project_id = "eoazvnwiobtzzrdxjfzr"
+
+[functions.chat]
+verify_jwt = true
+
+[functions.generate-image]
+verify_jwt = true
+
+[functions.generate-copy]
+verify_jwt = true
+
+[functions.generate-content-marketing]
+verify_jwt = true
+
+[functions.generate-brainstorm]
+verify_jwt = true
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.check-subscription]
+verify_jwt = true
+
+[functions.customer-portal]
+verify_jwt = true
