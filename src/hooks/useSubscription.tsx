@@ -30,7 +30,7 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 const TIER_LIMITS = {
-  free: { products: 15, images: 15, copies: 15, content_marketing: 15 },
+  free: { products: 20, images: 20, copies: 20, content_marketing: 20 },
   pro: { products: 50, images: 50, copies: 50, content_marketing: 50 },
   max: { products: 100, images: 100, copies: 100, content_marketing: 100 },
 };
