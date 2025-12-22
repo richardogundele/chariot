@@ -48,18 +48,34 @@ export default function ContentMarketing() {
   ];
 
   const handleGenerate = async () => {
-    // Check usage limit first
-    if (!canUse("content_marketing")) {
-      setShowLimitDialog(true);
-      return;
-    }
-
     if (!productDescription.trim()) {
       toast({
         title: "Missing Information",
         description: "Please provide a product description",
         variant: "destructive",
       });
+      return;
+    }
+
+    // Check and increment usage atomically via RPC
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to generate content.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: usageResult, error: usageError } = await supabase.rpc('check_and_increment_usage', {
+      p_user_id: user.id,
+      p_usage_type: 'content_marketing'
+    });
+
+    const result = usageResult as { allowed: boolean } | null;
+    if (usageError || !result?.allowed) {
+      setShowLimitDialog(true);
       return;
     }
 

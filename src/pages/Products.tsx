@@ -220,12 +220,6 @@ Style: Ultra-realistic 3D product visualization, commercial photography quality,
   };
 
   const handleAddProduct = async () => {
-    // Check usage limit first
-    if (!canUse("products")) {
-      setShowLimitDialog(true);
-      return;
-    }
-
     if (!newProduct.name || !newProduct.description) {
       toast({
         title: "Missing Information",
@@ -244,11 +238,31 @@ Style: Ultra-realistic 3D product visualization, commercial photography quality,
       return;
     }
 
+    // Check and increment usage atomically via RPC
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to add products.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: usageResult, error: usageError } = await supabase.rpc('check_and_increment_usage', {
+      p_user_id: user.id,
+      p_usage_type: 'products'
+    });
+
+    const result = usageResult as { allowed: boolean } | null;
+    if (usageError || !result?.allowed) {
+      setShowLimitDialog(true);
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
 
       // Generate or finetune image
       let imageUrl = null;

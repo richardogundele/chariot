@@ -98,8 +98,24 @@ const CopyGenerator = () => {
   };
 
   const handleGenerate = async () => {
-    // Check usage limit first
-    if (!canUse("copies")) {
+    // Check and increment usage atomically via RPC
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to generate content.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: usageResult, error: usageError } = await supabase.rpc('check_and_increment_usage', {
+      p_user_id: user.id,
+      p_usage_type: 'copies'
+    });
+
+    const result = usageResult as { allowed: boolean } | null;
+    if (usageError || !result?.allowed) {
       setShowLimitDialog(true);
       return;
     }
@@ -164,8 +180,10 @@ const CopyGenerator = () => {
         console.error('Error saving copy:', saveError);
       } else {
         await loadPreviousCopy();
-        await checkSubscription(); // Refresh usage counts
       }
+      
+      // Always refresh usage counts after generation
+      await checkSubscription();
 
       toast({
         title: "Content Generated!",
