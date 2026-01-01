@@ -401,7 +401,7 @@ const Index = () => {
             Start free, upgrade when you're ready to scale
           </p>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <Card className="relative border-border hover:border-primary/30 transition-smooth">
               <CardHeader className="pb-4">
@@ -415,10 +415,9 @@ const Index = () => {
               <CardContent className="space-y-4">
                 <ul className="space-y-3">
                 {[
-                    "15 Product Creations",
-                    "15 AI Image Generations",
-                    "15 Copy Generations",
-                    "15 Content Marketing",
+                    "10 Total Creations per Day",
+                    "Products, Images, Copy & Content",
+                    "All Copywriter Styles",
                     "Basic Support"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-center gap-3">
@@ -451,19 +450,17 @@ const Index = () => {
                 </CardTitle>
                 <CardDescription>For growing businesses</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">$7.99</span>
+                  <span className="text-4xl font-bold">$9.99</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-3">
                   {[
-                    "50 Product Creations",
-                    "50 AI Image Generations",
-                    "50 Copy Generations",
-                    "50 Content Marketing",
-                    "Priority Support",
-                    "All Copywriter Styles"
+                    "Unlimited Creations",
+                    "Products, Images, Copy & Content",
+                    "All Copywriter Styles",
+                    "Priority Support"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-center gap-3">
                       <Check className="w-5 h-5 text-primary flex-shrink-0" />
@@ -476,47 +473,6 @@ const Index = () => {
                   onClick={scrollToAuth}
                 >
                   Upgrade to Pro
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Max Plan */}
-            <Card className="relative border-border hover:border-primary/30 transition-smooth">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  Max
-                  <Sparkles className="w-5 h-5 text-primary" />
-                </CardTitle>
-                <CardDescription>For power users & agencies</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">$14.99</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  {[
-                    "100 Product Creations",
-                    "100 AI Image Generations",
-                    "100 Copy Generations",
-                    "100 Content Marketing",
-                    "Dedicated Support",
-                    "All Copywriter Styles",
-                    "Early Access Features"
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  variant="outline"
-                  className="w-full mt-6"
-                  onClick={scrollToAuth}
-                >
-                  Go Max
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>

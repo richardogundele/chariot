@@ -3,22 +3,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, Sparkles, ArrowRight, Loader2, CreditCard, Settings2 } from "lucide-react";
+import { Crown, ArrowRight, Loader2, CreditCard, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
 
 export function SubscriptionCard() {
-  const { tier, subscribed, subscriptionEnd, usage, limits, loading, checkSubscription } = useSubscription();
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const { tier, subscribed, subscriptionEnd, totalUsed, totalLimit, loading, checkSubscription } = useSubscription();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleUpgrade = async (planType: "pro" | "max") => {
-    setCheckoutLoading(planType);
+  const handleUpgrade = async () => {
+    setCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { planType },
+        body: { planType: "pro" },
       });
 
       if (error) throw error;
@@ -33,7 +33,7 @@ export function SubscriptionCard() {
         variant: "destructive",
       });
     } finally {
-      setCheckoutLoading(null);
+      setCheckoutLoading(false);
     }
   };
 
@@ -68,12 +68,8 @@ export function SubscriptionCard() {
     );
   }
 
-  const usageItems = [
-    { label: "Products", key: "products" as const },
-    { label: "Images", key: "images" as const },
-    { label: "Copies", key: "copies" as const },
-    { label: "Content Marketing", key: "content_marketing" as const },
-  ];
+  const isUnlimited = tier === "pro";
+  const percentage = isUnlimited ? 0 : (totalUsed / totalLimit) * 100;
 
   return (
     <Card>
@@ -88,7 +84,7 @@ export function SubscriptionCard() {
           </div>
           <Badge
             variant={tier === "free" ? "secondary" : "default"}
-            className={tier !== "free" ? "bg-primary" : ""}
+            className={tier === "pro" ? "bg-primary" : ""}
           >
             {tier === "free" && "Free Plan"}
             {tier === "pro" && (
@@ -97,39 +93,36 @@ export function SubscriptionCard() {
                 Pro Plan
               </>
             )}
-            {tier === "max" && (
-              <>
-                <Sparkles className="w-3 h-3 mr-1" />
-                Max Plan
-              </>
-            )}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Usage Stats */}
         <div className="space-y-4">
-          <h4 className="text-sm font-medium">Monthly Usage</h4>
-          {usageItems.map((item) => {
-            const current = usage?.[item.key] || 0;
-            const limit = limits[item.key];
-            const percentage = (current / limit) * 100;
-
-            return (
-              <div key={item.key} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{item.label}</span>
-                  <span>
-                    {current} / {limit}
-                  </span>
-                </div>
-                <Progress
-                  value={percentage}
-                  className={percentage >= 90 ? "bg-destructive/20" : ""}
-                />
-              </div>
-            );
-          })}
+          <h4 className="text-sm font-medium">Daily Usage</h4>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Total Creations</span>
+              <span>
+                {isUnlimited ? (
+                  <span className="text-primary font-medium">Unlimited</span>
+                ) : (
+                  `${totalUsed} / ${totalLimit}`
+                )}
+              </span>
+            </div>
+            {!isUnlimited && (
+              <Progress
+                value={percentage}
+                className={percentage >= 90 ? "bg-destructive/20" : ""}
+              />
+            )}
+          </div>
+          {!isUnlimited && (
+            <p className="text-xs text-muted-foreground">
+              Includes products, images, copies, and content marketing
+            </p>
+          )}
         </div>
 
         {subscriptionEnd && (
@@ -156,19 +149,17 @@ export function SubscriptionCard() {
             </Button>
           )}
 
-          {tier !== "max" && (
+          {tier === "free" && (
             <Button
-              onClick={() => handleUpgrade(tier === "free" ? "pro" : "max")}
-              disabled={checkoutLoading !== null}
+              onClick={handleUpgrade}
+              disabled={checkoutLoading}
             >
               {checkoutLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : tier === "free" ? (
-                <Crown className="w-4 h-4 mr-2" />
               ) : (
-                <Sparkles className="w-4 h-4 mr-2" />
+                <Crown className="w-4 h-4 mr-2" />
               )}
-              {tier === "free" ? "Upgrade to Pro" : "Upgrade to Max"}
+              Upgrade to Pro - $9.99/mo
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           )}
