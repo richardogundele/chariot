@@ -39,7 +39,7 @@ interface GeneratedCopyItem {
 
 const CopyGenerator = () => {
   const { toast } = useToast();
-  const { canUse, checkSubscription } = useSubscription();
+  const { checkSubscription } = useSubscription();
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [productDetails, setProductDetails] = useState({
     name: "",

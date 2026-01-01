@@ -35,7 +35,7 @@ interface GeneratedImage {
 
 const ImageGenerator = () => {
   const { toast } = useToast();
-  const { canUse, checkSubscription } = useSubscription();
+  const { checkSubscription } = useSubscription();
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("realistic");

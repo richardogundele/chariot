@@ -8,8 +8,7 @@ const corsHeaders = {
 };
 
 const PRODUCTS = {
-  "prod_TZK9LYbc6CtMXG": "pro",
-  "prod_TZKAiZQxfMwLmL": "max"
+  "prod_TZK9LYbc6CtMXG": "pro"
 };
 
 const logStep = (step: string, details?: any) => {

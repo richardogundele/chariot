@@ -16,7 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { UsageLimitDialog } from "@/components/UsageLimitDialog";
 
 export default function ContentMarketing() {
-  const { canUse, checkSubscription } = useSubscription();
+  const { checkSubscription } = useSubscription();
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [productDescription, setProductDescription] = useState("");
   const [targetAudience, setTargetAudience] = useState("");

@@ -32,7 +32,7 @@ interface Product {
 const Products = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { canUse, checkSubscription } = useSubscription();
+  const { checkSubscription } = useSubscription();
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);

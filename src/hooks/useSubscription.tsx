@@ -11,33 +11,25 @@ interface UsageData {
 }
 
 interface SubscriptionContextType {
-  tier: "free" | "pro" | "max";
+  tier: "free" | "pro";
   subscribed: boolean;
   subscriptionEnd: string | null;
   usage: UsageData | null;
-  limits: {
-    products: number;
-    images: number;
-    copies: number;
-    content_marketing: number;
-  };
+  totalUsed: number;
+  totalLimit: number;
   loading: boolean;
   checkSubscription: () => Promise<void>;
-  canUse: (type: "products" | "images" | "copies" | "content_marketing") => boolean;
-  getRemainingUsage: (type: "products" | "images" | "copies" | "content_marketing") => number;
+  canUse: () => boolean;
+  getRemainingUsage: () => number;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
-const TIER_LIMITS = {
-  free: { products: 20, images: 20, copies: 20, content_marketing: 20 },
-  pro: { products: 50, images: 50, copies: 50, content_marketing: 50 },
-  max: { products: 100, images: 100, copies: 100, content_marketing: 100 },
-};
+const FREE_DAILY_LIMIT = 10; // 10 total creations per day
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const { user, session } = useAuth();
-  const [tier, setTier] = useState<"free" | "pro" | "max">("free");
+  const [tier, setTier] = useState<"free" | "pro">("free");
   const [subscribed, setSubscribed] = useState(false);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [usage, setUsage] = useState<UsageData | null>(null);
@@ -62,7 +54,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       }
 
       if (data) {
-        setTier(data.tier || "free");
+        // Map any tier to just free or pro
+        const mappedTier = data.tier === "pro" || data.tier === "max" ? "pro" : "free";
+        setTier(mappedTier);
         setSubscribed(data.subscribed || false);
         setSubscriptionEnd(data.subscription_end || null);
         setUsage(data.usage || null);
@@ -93,16 +87,22 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     return () => clearInterval(interval);
   }, [user, checkSubscription]);
 
-  const limits = TIER_LIMITS[tier];
+  // Calculate total usage across all types
+  const totalUsed = usage 
+    ? (usage.products + usage.images + usage.copies + usage.content_marketing) 
+    : 0;
+  
+  // Pro = unlimited, Free = 10 per day
+  const totalLimit = tier === "pro" ? Infinity : FREE_DAILY_LIMIT;
 
-  const canUse = (type: "products" | "images" | "copies" | "content_marketing") => {
-    if (!usage) return true;
-    return usage[type] < limits[type];
+  const canUse = () => {
+    if (tier === "pro") return true; // Pro is unlimited
+    return totalUsed < FREE_DAILY_LIMIT;
   };
 
-  const getRemainingUsage = (type: "products" | "images" | "copies" | "content_marketing") => {
-    if (!usage) return limits[type];
-    return Math.max(0, limits[type] - usage[type]);
+  const getRemainingUsage = () => {
+    if (tier === "pro") return Infinity;
+    return Math.max(0, FREE_DAILY_LIMIT - totalUsed);
   };
 
   return (
@@ -112,7 +112,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         subscribed,
         subscriptionEnd,
         usage,
-        limits,
+        totalUsed,
+        totalLimit,
         loading,
         checkSubscription,
         canUse,

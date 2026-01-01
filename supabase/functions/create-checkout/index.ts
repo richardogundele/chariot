@@ -11,10 +11,6 @@ const PLANS = {
   pro: {
     priceId: "price_1ScBVSHLXoWIyP7gsNHavW4c",
     productId: "prod_TZK9LYbc6CtMXG"
-  },
-  max: {
-    priceId: "price_1ScBVlHLXoWIyP7g5NNpDI2c",
-    productId: "prod_TZKAiZQxfMwLmL"
   }
 };
 
@@ -31,8 +27,8 @@ serve(async (req) => {
   try {
     const { planType } = await req.json();
     
-    if (!planType || !PLANS[planType as keyof typeof PLANS]) {
-      throw new Error("Invalid plan type. Must be 'pro' or 'max'");
+    if (!planType || planType !== "pro") {
+      throw new Error("Invalid plan type. Must be 'pro'");
     }
 
     const authHeader = req.headers.get("Authorization")!;
