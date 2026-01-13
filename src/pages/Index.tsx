@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  ArrowRight, TrendingUp, Users, Globe, DollarSign, Eye, 
+  ArrowRight, TrendingUp, Users, Globe, DollarSign,
   Zap, Image as ImageIcon, FileText, BookOpen, Sparkles,
-  Check, Star, Loader2, ChevronLeft, ChevronRight, Crown
+  Check, Star, Loader2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -228,11 +228,11 @@ const Index = () => {
                 onClick={scrollToAuth}
                 className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover-lift"
               >
-                Start Free Trial
+                Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm text-muted-foreground">
-                No credit card required • 1,200+ businesses trust us
+                100% Free • 1,200+ businesses trust us
               </p>
             </div>
           </div>
@@ -391,93 +391,67 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Features Section - Everything Free */}
       <section id="pricing" className="py-24 lg:py-32 bg-gradient-to-b from-background to-secondary/20">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-center mb-4">
-            Simple, Transparent Pricing
+            100% Free to Use
           </h2>
           <p className="text-xl text-muted-foreground text-center mb-16">
-            Start free, upgrade when you're ready to scale
+            All features, completely free. No hidden costs.
           </p>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <Card className="relative border-border hover:border-primary/30 transition-smooth">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-2xl">Free</CardTitle>
-                <CardDescription>Perfect for getting started</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">$0</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                {[
-                    "10 Total Creations per Day",
-                    "Products, Images, Copy & Content",
-                    "All Copywriter Styles",
-                    "Basic Support"
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-6"
-                  onClick={scrollToAuth}
-                >
-                  Get Started Free
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Pro Plan */}
-            <Card className="relative border-primary shadow-lg scale-105">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                  Most Popular
-                </Badge>
+          <Card className="relative border-primary shadow-lg">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                Free Forever
+              </Badge>
+            </div>
+            <CardHeader className="pb-4 text-center">
+              <CardTitle className="text-2xl flex items-center justify-center gap-2">
+                Full Access
+                <Sparkles className="w-5 h-5 text-primary" />
+              </CardTitle>
+              <CardDescription>Everything you need to grow your business</CardDescription>
+              <div className="mt-4">
+                <span className="text-4xl font-bold">$0</span>
+                <span className="text-muted-foreground">/forever</span>
               </div>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  Pro
-                  <Crown className="w-5 h-5 text-primary" />
-                </CardTitle>
-                <CardDescription>For growing businesses</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">$9.99</span>
-                  <span className="text-muted-foreground">/month</span>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "10 Creations per Day",
+                  "AI Product Images",
+                  "Expert Copywriting",
+                  "Content Marketing Hub",
+                  "All Copywriter Styles",
+                  "AI Chat Assistant",
+                  "Full Feature Access",
+                  "Community Support"
+                ].map((feature, index) => (
+                  <li key={index} className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-foreground">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-4 border-t border-border mt-6">
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Have a coupon code? Get unlimited access!
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button 
+                    size="lg"
+                    onClick={scrollToAuth}
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  {[
-                    "Unlimited Creations",
-                    "Products, Images, Copy & Content",
-                    "All Copywriter Styles",
-                    "Priority Support"
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                      <span className="text-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  className="w-full mt-6"
-                  onClick={scrollToAuth}
-                >
-                  Upgrade to Pro
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -513,7 +487,7 @@ const Index = () => {
                 <CardDescription>
                   {isLogin
                     ? "Sign in to access your marketing dashboard"
-                    : "Get started with AI-powered marketing - free trial included"}
+                    : "Get started with AI-powered marketing - 100% free"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
