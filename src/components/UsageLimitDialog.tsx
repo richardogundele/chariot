@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, ArrowRight, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Crown, ArrowRight } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
+import { CouponCodeDialog } from "./CouponCodeDialog";
 
 interface UsageLimitDialogProps {
   open: boolean;
@@ -21,32 +20,8 @@ interface UsageLimitDialogProps {
 }
 
 export function UsageLimitDialog({ open, onOpenChange }: UsageLimitDialogProps) {
-  const { tier, totalUsed, totalLimit } = useSubscription();
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-
-  const handleUpgrade = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { planType: "pro" },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to start checkout",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { tier, totalLimit } = useSubscription();
+  const [couponDialogOpen, setCouponDialogOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,7 +42,7 @@ export function UsageLimitDialog({ open, onOpenChange }: UsageLimitDialogProps) 
 
         <div className="space-y-4 py-4">
           <p className="text-muted-foreground">
-            Upgrade to Pro for unlimited creations and never hit a limit again.
+            Have a coupon code? Upgrade to Pro for unlimited creations!
           </p>
 
           <div className="grid gap-4">
@@ -79,18 +54,15 @@ export function UsageLimitDialog({ open, onOpenChange }: UsageLimitDialogProps) 
                     <Badge className="bg-primary/10 text-primary">Unlimited</Badge>
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Unlimited creations • $9.99/mo
+                    Unlimited creations with coupon code
                   </p>
                 </div>
-                <Button onClick={handleUpgrade} disabled={loading}>
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      Upgrade
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </>
-                  )}
+                <Button onClick={() => {
+                  onOpenChange(false);
+                  setCouponDialogOpen(true);
+                }}>
+                  Enter Coupon
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
             )}
@@ -103,6 +75,11 @@ export function UsageLimitDialog({ open, onOpenChange }: UsageLimitDialogProps) 
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <CouponCodeDialog 
+        open={couponDialogOpen} 
+        onOpenChange={setCouponDialogOpen} 
+      />
     </Dialog>
   );
 }

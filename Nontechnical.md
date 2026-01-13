@@ -91,15 +91,16 @@ It's that simple!
 
 ## Pricing
 
-### Free Plan
+### Free Plan (Default)
 - 10 total creations per day
-- Access to all features
-- Perfect for getting started
+- Access to ALL features
+- No credit card required
+- Free forever!
 
-### Pro Plan - $9.99/month
+### Pro Plan (With Coupon Code)
 - Unlimited creations
 - Priority support
-- Best for growing businesses
+- Activate with a special coupon code
 
 ---
 

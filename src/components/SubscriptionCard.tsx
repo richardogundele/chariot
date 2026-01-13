@@ -3,60 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, ArrowRight, Loader2, CreditCard, Settings2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Crown, ArrowRight, Loader2, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
+import { CouponCodeDialog } from "./CouponCodeDialog";
 
 export function SubscriptionCard() {
   const { tier, subscribed, subscriptionEnd, totalUsed, totalLimit, loading, checkSubscription } = useSubscription();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
-  const { toast } = useToast();
-
-  const handleUpgrade = async () => {
-    setCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { planType: "pro" },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to start checkout",
-        variant: "destructive",
-      });
-    } finally {
-      setCheckoutLoading(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to open subscription portal",
-        variant: "destructive",
-      });
-    } finally {
-      setPortalLoading(false);
-    }
-  };
+  const [couponDialogOpen, setCouponDialogOpen] = useState(false);
 
   if (loading) {
     return (
@@ -138,28 +91,10 @@ export function SubscriptionCard() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3">
-          {subscribed && (
-            <Button variant="outline" onClick={handleManageSubscription} disabled={portalLoading}>
-              {portalLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : (
-                <Settings2 className="w-4 h-4 mr-2" />
-              )}
-              Manage Subscription
-            </Button>
-          )}
-
           {tier === "free" && (
-            <Button
-              onClick={handleUpgrade}
-              disabled={checkoutLoading}
-            >
-              {checkoutLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : (
-                <Crown className="w-4 h-4 mr-2" />
-              )}
-              Upgrade to Pro - $9.99/mo
+            <Button onClick={() => setCouponDialogOpen(true)}>
+              <Crown className="w-4 h-4 mr-2" />
+              Upgrade to Pro
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           )}
@@ -168,6 +103,11 @@ export function SubscriptionCard() {
             Refresh Status
           </Button>
         </div>
+
+        <CouponCodeDialog 
+          open={couponDialogOpen} 
+          onOpenChange={setCouponDialogOpen} 
+        />
       </CardContent>
     </Card>
   );
