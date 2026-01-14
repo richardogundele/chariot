@@ -30,9 +30,6 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
 
@@ -42,6 +39,85 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
+
+    // First, check if user has coupon-applied Pro status
+    const { data: existingUsage } = await supabaseClient
+      .from('user_usage')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    // If user has a coupon applied, they have Pro access - return immediately
+    if (existingUsage?.coupon_applied) {
+      logStep("User has coupon-applied Pro access", { coupon: existingUsage.coupon_applied });
+      return new Response(JSON.stringify({
+        subscribed: true,
+        tier: "pro",
+        subscription_end: null,
+        usage: {
+          products: existingUsage.products_count || 0,
+          images: existingUsage.images_count || 0,
+          copies: existingUsage.copies_count || 0,
+          content_marketing: existingUsage.content_marketing_count || 0,
+          period_start: existingUsage.period_start || null
+        }
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // If user has tier set to "pro" via any method, respect it
+    if (existingUsage?.tier === "pro") {
+      logStep("User has Pro tier in database");
+      return new Response(JSON.stringify({
+        subscribed: true,
+        tier: "pro",
+        subscription_end: existingUsage.subscription_end_date || null,
+        usage: {
+          products: existingUsage.products_count || 0,
+          images: existingUsage.images_count || 0,
+          copies: existingUsage.copies_count || 0,
+          content_marketing: existingUsage.content_marketing_count || 0,
+          period_start: existingUsage.period_start || null
+        }
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // Check Stripe for subscription status
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    
+    // If no Stripe key, return free tier with usage data
+    if (!stripeKey) {
+      logStep("No Stripe key, returning free tier");
+      
+      // Ensure user has usage record
+      if (!existingUsage) {
+        await supabaseClient.from('user_usage').upsert({
+          user_id: user.id,
+          subscription_tier: 'free'
+        }, { onConflict: 'user_id' });
+      }
+      
+      return new Response(JSON.stringify({ 
+        subscribed: false, 
+        tier: 'free',
+        subscription_end: null,
+        usage: existingUsage ? {
+          products: existingUsage.products_count || 0,
+          images: existingUsage.images_count || 0,
+          copies: existingUsage.copies_count || 0,
+          content_marketing: existingUsage.content_marketing_count || 0,
+          period_start: existingUsage.period_start || null
+        } : null
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -58,7 +134,14 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         subscribed: false, 
         tier: 'free',
-        subscription_end: null 
+        subscription_end: null,
+        usage: existingUsage ? {
+          products: existingUsage.products_count || 0,
+          images: existingUsage.images_count || 0,
+          copies: existingUsage.copies_count || 0,
+          content_marketing: existingUsage.content_marketing_count || 0,
+          period_start: existingUsage.period_start || null
+        } : null
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -76,12 +159,20 @@ serve(async (req) => {
     
     const hasActiveSub = subscriptions.data.length > 0;
     let tier = "free";
-    let subscriptionEnd = null;
-    let subscriptionId = null;
+    let subscriptionEnd: string | null = null;
+    let subscriptionId: string | null = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      // Safely convert timestamp to ISO string
+      if (subscription.current_period_end) {
+        try {
+          subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+        } catch (e) {
+          console.error("Error parsing subscription end date:", e);
+          subscriptionEnd = null;
+        }
+      }
       subscriptionId = subscription.id;
       const productId = subscription.items.data[0].price.product as string;
       tier = PRODUCTS[productId as keyof typeof PRODUCTS] || "free";
@@ -99,7 +190,7 @@ serve(async (req) => {
       subscription_end_date: subscriptionEnd
     }, { onConflict: 'user_id' });
 
-    // Get current usage
+    // Get updated usage data
     const { data: usageData } = await supabaseClient
       .from('user_usage')
       .select('*')
@@ -111,11 +202,11 @@ serve(async (req) => {
       tier,
       subscription_end: subscriptionEnd,
       usage: usageData ? {
-        products: usageData.products_count,
-        images: usageData.images_count,
-        copies: usageData.copies_count,
-        content_marketing: usageData.content_marketing_count,
-        period_start: usageData.period_start
+        products: usageData.products_count || 0,
+        images: usageData.images_count || 0,
+        copies: usageData.copies_count || 0,
+        content_marketing: usageData.content_marketing_count || 0,
+        period_start: usageData.period_start || null
       } : null
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
