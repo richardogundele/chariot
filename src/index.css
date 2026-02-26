@@ -9,42 +9,42 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* ChariotAI — Bold & Energetic */
-    --background: 240 15% 6%;
-    --foreground: 0 0% 98%;
+    --background: 250 25% 8%;
+    --foreground: 220 20% 95%;
 
-    --card: 240 12% 10%;
-    --card-foreground: 0 0% 98%;
+    --card: 250 20% 12%;
+    --card-foreground: 220 20% 95%;
 
-    --popover: 240 12% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 250 20% 14%;
+    --popover-foreground: 220 20% 95%;
 
-    /* Electric Orange Primary */
-    --primary: 24 100% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 24 100% 48%;
+    /* Vivid Coral-Orange Primary */
+    --primary: 15 90% 58%;
+    --primary-foreground: 250 25% 8%;
+    --primary-hover: 15 90% 50%;
 
-    /* Deep Navy Secondary */
-    --secondary: 240 15% 14%;
-    --secondary-foreground: 0 0% 98%;
+    /* Deep Indigo Secondary */
+    --secondary: 250 30% 16%;
+    --secondary-foreground: 220 20% 95%;
 
     /* Muted tones */
-    --muted: 240 10% 18%;
-    --muted-foreground: 240 5% 55%;
+    --muted: 250 20% 20%;
+    --muted-foreground: 250 15% 55%;
 
-    /* Vibrant Cyan Accent */
-    --accent: 175 85% 50%;
-    --accent-foreground: 240 15% 6%;
+    /* Electric Teal Accent */
+    --accent: 170 80% 52%;
+    --accent-foreground: 250 25% 8%;
 
     /* Success & Error States */
     --success: 155 75% 48%;
-    --success-foreground: 0 0% 98%;
+    --success-foreground: 220 20% 95%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 220 20% 95%;
 
     /* Borders & Inputs */
-    --border: 240 10% 20%;
-    --input: 240 10% 20%;
-    --ring: 24 100% 55%;
+    --border: 250 20% 22%;
+    --input: 250 20% 18%;
+    --ring: 15 90% 58%;
 
     /* 8px Spacing Scale */
     --spacing-1: 0.25rem;
@@ -71,8 +71,8 @@ All colors MUST be HSL.
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.2);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.25);
-    --shadow-elegant: 0 10px 40px -10px hsl(24 100% 55% / 0.4);
-    --shadow-glow: 0 0 80px hsl(24 100% 55% / 0.25);
+    --shadow-elegant: 0 10px 40px -10px hsl(15 90% 58% / 0.4);
+    --shadow-glow: 0 0 80px hsl(15 90% 58% / 0.25);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,14 +81,14 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 240 12% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 24 100% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 15% 14%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 10% 20%;
-    --sidebar-ring: 24 100% 55%;
+    --sidebar-background: 250 20% 12%;
+    --sidebar-foreground: 220 20% 95%;
+    --sidebar-primary: 15 90% 58%;
+    --sidebar-primary-foreground: 250 25% 8%;
+    --sidebar-accent: 250 30% 16%;
+    --sidebar-accent-foreground: 220 20% 95%;
+    --sidebar-border: 250 20% 22%;
+    --sidebar-ring: 15 90% 58%;
   }
 
   .dark {
