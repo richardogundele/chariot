@@ -8,71 +8,71 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* ChariotAI Professional Design System */
-    --background: 0 0% 7%;
+    /* ChariotAI — Bold & Energetic */
+    --background: 240 15% 6%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 10%;
+    --card: 240 12% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 12%;
+    --popover: 240 12% 12%;
     --popover-foreground: 0 0% 98%;
 
-    /* Gold Primary - Professional luxury */
-    --primary: 38 92% 50%;
-    --primary-foreground: 0 0% 7%;
-    --primary-hover: 38 92% 45%;
+    /* Electric Orange Primary */
+    --primary: 24 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 24 100% 48%;
 
-    /* Dark Secondary */
-    --secondary: 0 0% 15%;
+    /* Deep Navy Secondary */
+    --secondary: 240 15% 14%;
     --secondary-foreground: 0 0% 98%;
 
     /* Muted tones */
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 55%;
 
-    /* Gold Accent */
-    --accent: 38 92% 50%;
-    --accent-foreground: 0 0% 7%;
+    /* Vibrant Cyan Accent */
+    --accent: 175 85% 50%;
+    --accent-foreground: 240 15% 6%;
 
     /* Success & Error States */
-    --success: 142 71% 45%;
+    --success: 155 75% 48%;
     --success-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
     /* Borders & Inputs */
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 38 92% 50%;
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 24 100% 55%;
 
     /* 8px Spacing Scale */
-    --spacing-1: 0.25rem;   /* 4px */
-    --spacing-2: 0.5rem;    /* 8px */
-    --spacing-3: 0.75rem;   /* 12px */
-    --spacing-4: 1rem;      /* 16px */
-    --spacing-6: 1.5rem;    /* 24px */
-    --spacing-8: 2rem;      /* 32px */
-    --spacing-12: 3rem;     /* 48px */
-    --spacing-16: 4rem;     /* 64px */
-    --spacing-24: 6rem;     /* 96px */
+    --spacing-1: 0.25rem;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.75rem;
+    --spacing-4: 1rem;
+    --spacing-6: 1.5rem;
+    --spacing-8: 2rem;
+    --spacing-12: 3rem;
+    --spacing-16: 4rem;
+    --spacing-24: 6rem;
 
     /* Typography Scale */
-    --text-display: 3.75rem;  /* 60px */
-    --text-h1: 3rem;          /* 48px */
-    --text-h2: 2.25rem;       /* 36px */
-    --text-h3: 1.5rem;        /* 24px */
-    --text-body: 1rem;        /* 16px */
-    --text-caption: 0.875rem; /* 14px */
-    --text-small: 0.75rem;    /* 12px */
+    --text-display: 3.75rem;
+    --text-h1: 3rem;
+    --text-h2: 2.25rem;
+    --text-h3: 1.5rem;
+    --text-body: 1rem;
+    --text-caption: 0.875rem;
+    --text-small: 0.75rem;
 
     /* Elevation System */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.08);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.2);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.25);
-    --shadow-elegant: 0 10px 40px -10px hsl(38 92% 50% / 0.4);
-    --shadow-glow: 0 0 80px hsl(38 92% 50% / 0.25);
+    --shadow-elegant: 0 10px 40px -10px hsl(24 100% 55% / 0.4);
+    --shadow-glow: 0 0 80px hsl(24 100% 55% / 0.25);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,14 +81,14 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 10%;
+    --sidebar-background: 240 12% 10%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 38 92% 50%;
-    --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 15%;
+    --sidebar-primary: 24 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 15% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 38 92% 50%;
+    --sidebar-border: 240 10% 20%;
+    --sidebar-ring: 24 100% 55%;
   }
 
   .dark {
