@@ -76,10 +76,26 @@ const Index = () => {
 
       {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-accent/8 rounded-full blur-[100px]" />
+        {/* Underwater Ocean Background */}
+        <div className="ocean-bg">
+          <div className="ocean-blob-1" />
+          <div className="ocean-blob-2" />
+          <div className="ocean-blob-3" />
+          <div className="ocean-caustics" />
+          {/* Light rays */}
+          <div className="ocean-ray" style={{ left: '15%', height: '60%', top: 0, animationDelay: '0s' }} />
+          <div className="ocean-ray" style={{ left: '35%', height: '75%', top: 0, animationDelay: '2s' }} />
+          <div className="ocean-ray" style={{ left: '55%', height: '55%', top: 0, animationDelay: '4s' }} />
+          <div className="ocean-ray" style={{ left: '75%', height: '70%', top: 0, animationDelay: '1s' }} />
+          <div className="ocean-ray" style={{ left: '90%', height: '50%', top: 0, animationDelay: '3s' }} />
+          {/* Bubbles */}
+          <div className="ocean-bubble" style={{ left: '10%', width: 6, height: 6, animationDuration: '12s', animationDelay: '0s' }} />
+          <div className="ocean-bubble" style={{ left: '25%', width: 4, height: 4, animationDuration: '15s', animationDelay: '3s' }} />
+          <div className="ocean-bubble" style={{ left: '45%', width: 8, height: 8, animationDuration: '18s', animationDelay: '1s' }} />
+          <div className="ocean-bubble" style={{ left: '60%', width: 3, height: 3, animationDuration: '14s', animationDelay: '5s' }} />
+          <div className="ocean-bubble" style={{ left: '78%', width: 5, height: 5, animationDuration: '16s', animationDelay: '2s' }} />
+          <div className="ocean-bubble" style={{ left: '88%', width: 7, height: 7, animationDuration: '20s', animationDelay: '4s' }} />
+        </div>
 
         <div className="container relative z-10 mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto text-center">

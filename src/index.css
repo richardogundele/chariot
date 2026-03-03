@@ -8,43 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* ChariotAI — Bold & Energetic */
-    --background: 250 25% 8%;
-    --foreground: 220 20% 95%;
+    /* ChariotAI — Microsoft-Inspired Deep Ocean */
+    --background: 220 30% 6%;
+    --foreground: 210 20% 96%;
 
-    --card: 250 20% 12%;
-    --card-foreground: 220 20% 95%;
+    --card: 220 25% 10%;
+    --card-foreground: 210 20% 96%;
 
-    --popover: 250 20% 14%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 210 20% 96%;
 
-    /* Vivid Coral-Orange Primary */
-    --primary: 15 90% 58%;
-    --primary-foreground: 250 25% 8%;
-    --primary-hover: 15 90% 50%;
+    /* Microsoft Blue Primary */
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 210 100% 42%;
 
-    /* Deep Indigo Secondary */
-    --secondary: 250 30% 16%;
-    --secondary-foreground: 220 20% 95%;
+    /* Deep Ocean Secondary */
+    --secondary: 220 30% 14%;
+    --secondary-foreground: 210 20% 96%;
 
     /* Muted tones */
-    --muted: 250 20% 20%;
-    --muted-foreground: 250 15% 55%;
+    --muted: 220 25% 18%;
+    --muted-foreground: 220 15% 52%;
 
-    /* Electric Teal Accent */
-    --accent: 170 80% 52%;
-    --accent-foreground: 250 25% 8%;
+    /* Teal Accent */
+    --accent: 175 70% 45%;
+    --accent-foreground: 220 30% 6%;
 
     /* Success & Error States */
     --success: 155 75% 48%;
-    --success-foreground: 220 20% 95%;
+    --success-foreground: 210 20% 96%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 220 20% 95%;
+    --destructive-foreground: 210 20% 96%;
 
     /* Borders & Inputs */
-    --border: 250 20% 22%;
-    --input: 250 20% 18%;
-    --ring: 15 90% 58%;
+    --border: 220 25% 18%;
+    --input: 220 25% 15%;
+    --ring: 210 100% 50%;
 
     /* 8px Spacing Scale */
     --spacing-1: 0.25rem;
@@ -53,42 +53,46 @@ All colors MUST be HSL.
     --spacing-4: 1rem;
     --spacing-6: 1.5rem;
     --spacing-8: 2rem;
+    --spacing-10: 2.5rem;
     --spacing-12: 3rem;
     --spacing-16: 4rem;
-    --spacing-24: 6rem;
 
     /* Typography Scale */
-    --text-display: 3.75rem;
-    --text-h1: 3rem;
-    --text-h2: 2.25rem;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-display: 3.5rem;
+    --text-h1: 2.5rem;
+    --text-h2: 2rem;
     --text-h3: 1.5rem;
-    --text-body: 1rem;
-    --text-caption: 0.875rem;
-    --text-small: 0.75rem;
 
-    /* Elevation System */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.08);
+    /* Elevation */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.2);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.25);
-    --shadow-elegant: 0 10px 40px -10px hsl(15 90% 58% / 0.4);
-    --shadow-glow: 0 0 80px hsl(15 90% 58% / 0.25);
+    --shadow-elegant: 0 10px 40px -10px hsl(210 100% 50% / 0.35);
+    --shadow-glow: 0 0 80px hsl(210 100% 50% / 0.2);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 250 20% 12%;
-    --sidebar-foreground: 220 20% 95%;
-    --sidebar-primary: 15 90% 58%;
-    --sidebar-primary-foreground: 250 25% 8%;
-    --sidebar-accent: 250 30% 16%;
-    --sidebar-accent-foreground: 220 20% 95%;
-    --sidebar-border: 250 20% 22%;
-    --sidebar-ring: 15 90% 58%;
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 210 20% 96%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 30% 14%;
+    --sidebar-accent-foreground: 210 20% 96%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 210 100% 50%;
   }
 
   .dark {
@@ -197,5 +201,109 @@ All colors MUST be HSL.
 
   .hover-lift:hover {
     transform: translateY(-2px);
+  }
+
+  /* Underwater Ocean Animation */
+  @keyframes ocean-drift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+    25% { transform: translate(30px, -20px) scale(1.05); opacity: 0.2; }
+    50% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.12; }
+    75% { transform: translate(15px, 25px) scale(1.02); opacity: 0.18; }
+  }
+
+  @keyframes ocean-drift-2 {
+    0%, 100% { transform: translate(0, 0) scale(1.02); opacity: 0.1; }
+    30% { transform: translate(-40px, 20px) scale(0.98); opacity: 0.16; }
+    60% { transform: translate(25px, -30px) scale(1.06); opacity: 0.08; }
+  }
+
+  @keyframes bubble-rise {
+    0% { transform: translateY(100%) scale(0); opacity: 0; }
+    10% { opacity: 0.4; }
+    50% { opacity: 0.2; }
+    100% { transform: translateY(-120vh) scale(1); opacity: 0; }
+  }
+
+  @keyframes caustics {
+    0%, 100% { opacity: 0.03; transform: scale(1) rotate(0deg); }
+    33% { opacity: 0.06; transform: scale(1.1) rotate(2deg); }
+    66% { opacity: 0.04; transform: scale(0.95) rotate(-1deg); }
+  }
+
+  @keyframes light-ray {
+    0%, 100% { opacity: 0.04; transform: translateX(0) scaleY(1); }
+    50% { opacity: 0.08; transform: translateX(10px) scaleY(1.05); }
+  }
+
+  .ocean-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: linear-gradient(
+      180deg,
+      hsl(210 40% 8%) 0%,
+      hsl(215 50% 6%) 30%,
+      hsl(200 60% 5%) 60%,
+      hsl(195 50% 4%) 100%
+    );
+  }
+
+  .ocean-blob-1 {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(210 100% 50% / 0.12) 0%, transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation: ocean-drift 18s ease-in-out infinite;
+  }
+
+  .ocean-blob-2 {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(175 70% 45% / 0.1) 0%, transparent 70%);
+    bottom: -5%;
+    right: -10%;
+    animation: ocean-drift-2 22s ease-in-out infinite;
+  }
+
+  .ocean-blob-3 {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(220 80% 40% / 0.08) 0%, transparent 70%);
+    top: 40%;
+    left: 50%;
+    animation: ocean-drift 25s ease-in-out infinite reverse;
+  }
+
+  .ocean-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, hsl(210 100% 70% / 0.3), hsl(210 100% 50% / 0.05));
+    border: 1px solid hsl(210 100% 70% / 0.1);
+    animation: bubble-rise linear infinite;
+  }
+
+  .ocean-caustics {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 300px 200px at 20% 30%, hsl(195 80% 50% / 0.04), transparent),
+      radial-gradient(ellipse 250px 350px at 70% 60%, hsl(210 90% 50% / 0.03), transparent),
+      radial-gradient(ellipse 400px 250px at 50% 80%, hsl(180 70% 45% / 0.03), transparent);
+    animation: caustics 12s ease-in-out infinite;
+  }
+
+  .ocean-ray {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(180deg, hsl(210 100% 70% / 0.06), transparent);
+    transform-origin: top;
+    animation: light-ray 8s ease-in-out infinite;
   }
 }
