@@ -235,6 +235,21 @@ All colors MUST be HSL.
     50% { opacity: 0.25; transform: translateX(10px) scaleY(1.05); }
   }
 
+  @keyframes wave-rush {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes wave-rush-2 {
+    0% { transform: translateX(-100%) scaleY(1.2); }
+    100% { transform: translateX(100%) scaleY(0.8); }
+  }
+
+  @keyframes wave-rush-3 {
+    0% { transform: translateX(-100%) skewX(-5deg); }
+    100% { transform: translateX(100%) skewX(5deg); }
+  }
+
   .ocean-bg {
     position: absolute;
     inset: 0;
@@ -305,5 +320,65 @@ All colors MUST be HSL.
     background: linear-gradient(180deg, hsl(210 100% 70% / 0.2), hsl(200 80% 60% / 0.05), transparent);
     transform-origin: top;
     animation: light-ray 8s ease-in-out infinite;
+  }
+
+  /* Rushing water waves left-to-right */
+  .ocean-wave {
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(210 100% 50% / 0.06) 10%,
+      hsl(200 90% 55% / 0.18) 25%,
+      hsl(195 80% 60% / 0.25) 40%,
+      hsl(200 90% 55% / 0.18) 55%,
+      hsl(210 100% 50% / 0.06) 70%,
+      transparent 100%
+    );
+    animation: wave-rush 6s linear infinite;
+  }
+
+  .ocean-wave-2 {
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(175 70% 45% / 0.04) 15%,
+      hsl(190 80% 50% / 0.15) 30%,
+      hsl(185 70% 55% / 0.22) 50%,
+      hsl(190 80% 50% / 0.15) 65%,
+      hsl(175 70% 45% / 0.04) 80%,
+      transparent 100%
+    );
+    animation: wave-rush-2 8s linear infinite;
+    animation-delay: -2s;
+  }
+
+  .ocean-wave-3 {
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(220 80% 50% / 0.03) 5%,
+      hsl(210 100% 60% / 0.12) 20%,
+      hsl(205 90% 55% / 0.2) 45%,
+      hsl(210 100% 60% / 0.12) 60%,
+      hsl(220 80% 50% / 0.03) 85%,
+      transparent 100%
+    );
+    animation: wave-rush-3 10s linear infinite;
+    animation-delay: -4s;
   }
 }
