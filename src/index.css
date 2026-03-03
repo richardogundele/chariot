@@ -8,43 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* ChariotAI — Microsoft-Inspired Deep Ocean */
-    --background: 220 30% 6%;
-    --foreground: 210 20% 96%;
+    /* ChariotAI — Orange Blaze Theme */
+    --background: 20 30% 6%;
+    --foreground: 30 20% 96%;
 
-    --card: 220 25% 10%;
-    --card-foreground: 210 20% 96%;
+    --card: 20 25% 10%;
+    --card-foreground: 30 20% 96%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 210 20% 96%;
+    --popover: 20 25% 12%;
+    --popover-foreground: 30 20% 96%;
 
-    /* Microsoft Blue Primary */
-    --primary: 210 100% 50%;
+    /* Orange Primary */
+    --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 100% 42%;
+    --primary-hover: 25 95% 45%;
 
-    /* Deep Ocean Secondary */
-    --secondary: 220 30% 14%;
-    --secondary-foreground: 210 20% 96%;
+    /* Dark Warm Secondary */
+    --secondary: 20 30% 14%;
+    --secondary-foreground: 30 20% 96%;
 
     /* Muted tones */
-    --muted: 220 25% 18%;
-    --muted-foreground: 220 15% 52%;
+    --muted: 20 25% 18%;
+    --muted-foreground: 20 15% 52%;
 
-    /* Teal Accent */
-    --accent: 175 70% 45%;
-    --accent-foreground: 220 30% 6%;
+    /* Gold Accent */
+    --accent: 40 90% 55%;
+    --accent-foreground: 20 30% 6%;
 
     /* Success & Error States */
     --success: 155 75% 48%;
-    --success-foreground: 210 20% 96%;
+    --success-foreground: 30 20% 96%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 20% 96%;
+    --destructive-foreground: 30 20% 96%;
 
     /* Borders & Inputs */
-    --border: 220 25% 18%;
-    --input: 220 25% 15%;
-    --ring: 210 100% 50%;
+    --border: 20 25% 18%;
+    --input: 20 25% 15%;
+    --ring: 25 95% 53%;
 
     /* 8px Spacing Scale */
     --spacing-1: 0.25rem;
@@ -76,8 +76,8 @@ All colors MUST be HSL.
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.2);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.25);
-    --shadow-elegant: 0 10px 40px -10px hsl(210 100% 50% / 0.35);
-    --shadow-glow: 0 0 80px hsl(210 100% 50% / 0.2);
+    --shadow-elegant: 0 10px 40px -10px hsl(25 95% 53% / 0.35);
+    --shadow-glow: 0 0 80px hsl(25 95% 53% / 0.2);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -85,14 +85,14 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 220 25% 10%;
-    --sidebar-foreground: 210 20% 96%;
-    --sidebar-primary: 210 100% 50%;
+    --sidebar-background: 20 25% 10%;
+    --sidebar-foreground: 30 20% 96%;
+    --sidebar-primary: 25 95% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 14%;
-    --sidebar-accent-foreground: 210 20% 96%;
-    --sidebar-border: 220 25% 18%;
-    --sidebar-ring: 210 100% 50%;
+    --sidebar-accent: 20 30% 14%;
+    --sidebar-accent-foreground: 30 20% 96%;
+    --sidebar-border: 20 25% 18%;
+    --sidebar-ring: 25 95% 53%;
   }
 
   .dark {
@@ -256,10 +256,10 @@ All colors MUST be HSL.
     overflow: hidden;
     background: linear-gradient(
       180deg,
-      hsl(210 40% 8%) 0%,
-      hsl(215 50% 6%) 30%,
-      hsl(200 60% 5%) 60%,
-      hsl(195 50% 4%) 100%
+      hsl(20 40% 8%) 0%,
+      hsl(15 50% 6%) 30%,
+      hsl(10 60% 5%) 60%,
+      hsl(25 50% 4%) 100%
     );
   }
 
@@ -268,7 +268,7 @@ All colors MUST be HSL.
     width: 900px;
     height: 900px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(210 100% 50% / 0.35) 0%, hsl(200 80% 40% / 0.1) 50%, transparent 70%);
+    background: radial-gradient(circle, hsl(25 95% 53% / 0.35) 0%, hsl(30 80% 40% / 0.1) 50%, transparent 70%);
     top: -15%;
     left: -15%;
     animation: ocean-drift 18s ease-in-out infinite;
@@ -279,7 +279,7 @@ All colors MUST be HSL.
     width: 700px;
     height: 700px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(175 70% 45% / 0.3) 0%, hsl(190 60% 35% / 0.1) 50%, transparent 70%);
+    background: radial-gradient(circle, hsl(40 90% 55% / 0.3) 0%, hsl(35 60% 35% / 0.1) 50%, transparent 70%);
     bottom: -10%;
     right: -10%;
     animation: ocean-drift-2 22s ease-in-out infinite;
@@ -290,7 +290,7 @@ All colors MUST be HSL.
     width: 600px;
     height: 600px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(220 80% 45% / 0.25) 0%, hsl(230 60% 30% / 0.08) 50%, transparent 70%);
+    background: radial-gradient(circle, hsl(20 80% 45% / 0.25) 0%, hsl(15 60% 30% / 0.08) 50%, transparent 70%);
     top: 40%;
     left: 50%;
     animation: ocean-drift 25s ease-in-out infinite reverse;
@@ -299,8 +299,8 @@ All colors MUST be HSL.
   .ocean-bubble {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, hsl(210 100% 80% / 0.6), hsl(210 100% 50% / 0.15));
-    border: 1px solid hsl(210 100% 80% / 0.25);
+    background: radial-gradient(circle at 30% 30%, hsl(30 100% 80% / 0.6), hsl(25 95% 53% / 0.15));
+    border: 1px solid hsl(40 100% 80% / 0.25);
     animation: bubble-rise linear infinite;
   }
 
@@ -308,16 +308,16 @@ All colors MUST be HSL.
     position: absolute;
     inset: 0;
     background: 
-      radial-gradient(ellipse 400px 300px at 20% 30%, hsl(195 80% 50% / 0.12), transparent),
-      radial-gradient(ellipse 350px 450px at 70% 60%, hsl(210 90% 50% / 0.1), transparent),
-      radial-gradient(ellipse 500px 350px at 50% 80%, hsl(180 70% 45% / 0.08), transparent);
+      radial-gradient(ellipse 400px 300px at 20% 30%, hsl(25 80% 50% / 0.12), transparent),
+      radial-gradient(ellipse 350px 450px at 70% 60%, hsl(35 90% 50% / 0.1), transparent),
+      radial-gradient(ellipse 500px 350px at 50% 80%, hsl(40 70% 45% / 0.08), transparent);
     animation: caustics 12s ease-in-out infinite;
   }
 
   .ocean-ray {
     position: absolute;
     width: 3px;
-    background: linear-gradient(180deg, hsl(210 100% 70% / 0.2), hsl(200 80% 60% / 0.05), transparent);
+    background: linear-gradient(180deg, hsl(30 100% 70% / 0.2), hsl(25 80% 60% / 0.05), transparent);
     transform-origin: top;
     animation: light-ray 8s ease-in-out infinite;
   }
@@ -332,11 +332,11 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent 0%,
-      hsl(210 100% 50% / 0.06) 10%,
-      hsl(200 90% 55% / 0.18) 25%,
-      hsl(195 80% 60% / 0.25) 40%,
-      hsl(200 90% 55% / 0.18) 55%,
-      hsl(210 100% 50% / 0.06) 70%,
+      hsl(25 95% 53% / 0.06) 10%,
+      hsl(30 90% 55% / 0.18) 25%,
+      hsl(35 80% 60% / 0.25) 40%,
+      hsl(30 90% 55% / 0.18) 55%,
+      hsl(25 95% 53% / 0.06) 70%,
       transparent 100%
     );
     animation: wave-rush 6s linear infinite;
@@ -351,11 +351,11 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent 0%,
-      hsl(175 70% 45% / 0.04) 15%,
-      hsl(190 80% 50% / 0.15) 30%,
-      hsl(185 70% 55% / 0.22) 50%,
-      hsl(190 80% 50% / 0.15) 65%,
-      hsl(175 70% 45% / 0.04) 80%,
+      hsl(40 90% 55% / 0.04) 15%,
+      hsl(35 80% 50% / 0.15) 30%,
+      hsl(30 70% 55% / 0.22) 50%,
+      hsl(35 80% 50% / 0.15) 65%,
+      hsl(40 90% 55% / 0.04) 80%,
       transparent 100%
     );
     animation: wave-rush-2 8s linear infinite;
@@ -371,11 +371,11 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent 0%,
-      hsl(220 80% 50% / 0.03) 5%,
-      hsl(210 100% 60% / 0.12) 20%,
-      hsl(205 90% 55% / 0.2) 45%,
-      hsl(210 100% 60% / 0.12) 60%,
-      hsl(220 80% 50% / 0.03) 85%,
+      hsl(20 80% 50% / 0.03) 5%,
+      hsl(25 100% 60% / 0.12) 20%,
+      hsl(30 90% 55% / 0.2) 45%,
+      hsl(25 100% 60% / 0.12) 60%,
+      hsl(20 80% 50% / 0.03) 85%,
       transparent 100%
     );
     animation: wave-rush-3 10s linear infinite;
