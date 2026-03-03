@@ -82,6 +82,10 @@ const Index = () => {
           <div className="ocean-blob-2" />
           <div className="ocean-blob-3" />
           <div className="ocean-caustics" />
+          {/* Rushing water waves */}
+          <div className="ocean-wave" />
+          <div className="ocean-wave-2" />
+          <div className="ocean-wave-3" />
           {/* Light rays */}
           <div className="ocean-ray" style={{ left: '15%', height: '60%', top: 0, animationDelay: '0s' }} />
           <div className="ocean-ray" style={{ left: '35%', height: '75%', top: 0, animationDelay: '2s' }} />
