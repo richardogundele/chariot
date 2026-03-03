@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Zap, Video, BarChart3, RefreshCw, ArrowRight, Sparkles, TrendingUp, Bot, Check } from "lucide-react";
+import { Flame, Video, BarChart3, RefreshCw, ArrowRight, Sparkles, TrendingUp, Bot, Check } from "lucide-react";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -40,7 +40,7 @@ const Index = () => {
       description: "The agent learns from your top-performing content and auto-adjusts your next brief. That's the moat.",
     },
     {
-      icon: Zap,
+      icon: Flame,
       title: "Multi-Brand Support",
       description: "Run one engine across multiple brands. Build once, deploy everywhere.",
     },
@@ -60,7 +60,7 @@ const Index = () => {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" />
+              <Flame className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold">ChariotAI</span>
           </div>
@@ -238,7 +238,7 @@ const Index = () => {
         <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+              <Flame className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="font-bold">ChariotAI</span>
           </div>
