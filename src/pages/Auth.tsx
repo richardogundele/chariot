@@ -5,32 +5,48 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Briefcase, Mail } from "lucide-react";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"email" | "otp">("email");
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
+      const { error } = await supabase.auth.signInWithOtp({ email });
       if (error) throw error;
-      setSent(true);
-      toast({ title: "Check your email!", description: "We sent you a magic link to sign in." });
+      setStep("otp");
+      toast({ title: "Code sent!", description: "Check your email for the 6-digit code." });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length !== 6) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: "email",
+      });
+      if (error) throw error;
+      toast({ title: "Welcome!", description: "You're signed in." });
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({ title: "Invalid code", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -56,33 +72,50 @@ const Auth = () => {
 
         <Card className="border-border/50 backdrop-blur-md bg-card/95">
           <CardHeader>
-            <CardTitle>{sent ? "Check Your Email" : "Get Started"}</CardTitle>
+            <CardTitle>{step === "otp" ? "Enter Code" : "Get Started"}</CardTitle>
             <CardDescription>
-              {sent
-                ? "We sent a magic link to your email. Click it to sign in."
-                : "Enter your email to receive a sign-in link — no password needed."}
+              {step === "otp"
+                ? `We sent a 6-digit code to ${email}`
+                : "Enter your email to receive a sign-in code."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {sent ? (
-              <div className="text-center space-y-4">
-                <Mail className="h-12 w-12 mx-auto text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  Sent to <span className="font-medium text-foreground">{email}</span>
-                </p>
-                <Button variant="outline" className="w-full" onClick={() => setSent(false)}>
-                  Use a different email
+            {step === "otp" ? (
+              <form onSubmit={handleVerifyOtp} className="space-y-6">
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <Button type="submit" className="w-full" disabled={loading || otp.length !== 6}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Verify & Sign In
                 </Button>
-              </div>
+                <div className="flex justify-between">
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setStep("email"); setOtp(""); }}>
+                    Change email
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={handleSendOtp as any} disabled={loading}>
+                    Resend code
+                  </Button>
+                </div>
+              </form>
             ) : (
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleSendOtp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Send Magic Link
+                  Send Code
                 </Button>
               </form>
             )}
