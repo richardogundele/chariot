@@ -114,9 +114,14 @@ const Index = () => {
             <a href="#tech" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tech Stack</a>
             <a href="#roadmap" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Roadmap</a>
           </div>
-          <Button variant="hero" size="sm" onClick={() => document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })}>
-            Get Early Access
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth">Sign In</Link>
+            </Button>
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
+          </div>
         </div>
       </nav>
 
