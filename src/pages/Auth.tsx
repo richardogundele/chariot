@@ -6,39 +6,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Briefcase } from "lucide-react";
+import { Loader2, Briefcase, Mail } from "lucide-react";
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [sent, setSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast({ title: "Welcome back!", description: "Successfully logged in." });
-        navigate("/dashboard");
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast({ title: "Account created!", description: "Please check your email to confirm your account." });
-      }
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) throw error;
+      setSent(true);
+      toast({ title: "Check your email!", description: "We sent you a magic link to sign in." });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -66,39 +56,36 @@ const Auth = () => {
 
         <Card className="border-border/50 backdrop-blur-md bg-card/95">
           <CardHeader>
-            <CardTitle>{isLogin ? "Welcome Back" : "Create Account"}</CardTitle>
+            <CardTitle>{sent ? "Check Your Email" : "Get Started"}</CardTitle>
             <CardDescription>
-              {isLogin
-                ? "Sign in to manage your job applications"
-                : "Get started with automated job applications"}
+              {sent
+                ? "We sent a magic link to your email. Click it to sign in."
+                : "Enter your email to receive a sign-in link — no password needed."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
-              {!isLogin && (
+            {sent ? (
+              <div className="text-center space-y-4">
+                <Mail className="h-12 w-12 mx-auto text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  Sent to <span className="font-medium text-foreground">{email}</span>
+                </p>
+                <Button variant="outline" className="w-full" onClick={() => setSent(false)}>
+                  Use a different email
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" type="text" placeholder="Richard Ogundele" value={fullName} onChange={(e) => setFullName(e.target.value)} required={!isLogin} />
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLogin ? "Sign In" : "Create Account"}
-              </Button>
-            </form>
-            <div className="mt-4 text-center text-sm">
-              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline">
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-              </button>
-            </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Send Magic Link
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
