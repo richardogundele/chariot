@@ -309,16 +309,13 @@ const Index = () => {
               </span>
             </h2>
             <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-              Be first in line when the LinkedIn Job Application Agent goes public. Early access members get lifetime access.
+              Sign up and start using the LinkedIn Job Application Agent today.
             </p>
-            <Button
-              variant="hero"
-              size="xl"
-              className="gap-2"
-              onClick={() => document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Join the Waitlist
-              <ArrowRight className="h-5 w-5" />
+            <Button variant="hero" size="xl" className="gap-2" asChild>
+              <Link to="/auth">
+                Get Started Now
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </Button>
           </div>
         </div>
