@@ -74,10 +74,20 @@ const SubmitJobs = () => {
         },
       }));
 
-      const { error } = await supabase.from("agent_workflows").insert(workflows);
+      const { data: insertedRows, error } = await supabase.from("agent_workflows").insert(workflows).select();
       if (error) throw error;
 
-      toast({ title: "Jobs submitted!", description: `${validUrls.length} job(s) added to your pipeline.` });
+      toast({ title: "Jobs submitted!", description: `${validUrls.length} job(s) queued — agents are processing...` });
+
+      // Trigger the agent pipeline for each workflow (fire-and-forget)
+      if (insertedRows) {
+        for (const row of insertedRows) {
+          supabase.functions.invoke("process-workflow", {
+            body: { workflow_id: row.id },
+          }).catch((err: any) => console.error("Pipeline trigger error:", err));
+        }
+      }
+
       navigate("/applications");
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });

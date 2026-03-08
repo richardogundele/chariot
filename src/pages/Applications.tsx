@@ -72,6 +72,7 @@ const Applications = () => {
   const getStatusBadge = (status: string) => {
     const map: Record<string, { className: string; label: string }> = {
       completed: { className: "bg-green-500/20 text-green-400 border-green-500/30", label: "Applied" },
+      review: { className: "bg-purple-500/20 text-purple-400 border-purple-500/30", label: "Awaiting Review" },
       in_progress: { className: "bg-primary/20 text-primary border-primary/30", label: "In Progress" },
       pending: { className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", label: "Pending" },
       skipped: { className: "bg-muted text-muted-foreground border-border", label: "Skipped" },
@@ -122,6 +123,7 @@ const Applications = () => {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="review">Awaiting Review</SelectItem>
               <SelectItem value="completed">Applied</SelectItem>
               <SelectItem value="skipped">Skipped</SelectItem>
             </SelectContent>
@@ -195,7 +197,9 @@ const Applications = () => {
             <DialogHeader>
               <DialogTitle>Application Details</DialogTitle>
             </DialogHeader>
-            {selectedApp && (
+            {selectedApp && (() => {
+              const data = selectedApp.workflow_data as any;
+              return (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label label="Status">{getStatusBadge(selectedApp.status)}</Label>
@@ -209,43 +213,76 @@ const Applications = () => {
                   </div>
                 </div>
 
-                {(selectedApp.workflow_data as any)?.job_url && (
+                {data?.fit_score && (
+                  <div className="p-3 rounded-lg bg-muted border border-border">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-medium">Fit Score</p>
+                      <p className="text-2xl font-bold text-primary">{data.fit_score}<span className="text-sm text-muted-foreground">/10</span></p>
+                    </div>
+                    {data.strategy_summary && (
+                      <p className="text-sm text-muted-foreground">{data.strategy_summary}</p>
+                    )}
+                  </div>
+                )}
+
+                {data?.top_strengths?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Top Strengths</p>
+                    <ul className="space-y-1">
+                      {data.top_strengths.map((s: string, i: number) => (
+                        <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-4 w-4 text-green-400 shrink-0 mt-0.5" />{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {data?.gaps?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Gaps / Risks</p>
+                    <ul className="space-y-1">
+                      {data.gaps.map((g: string, i: number) => (
+                        <li key={i} className="text-sm flex items-start gap-2"><XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />{g}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {data?.job_url && (
                   <Button variant="outline" className="w-full" asChild>
-                    <a href={(selectedApp.workflow_data as any).job_url} target="_blank" rel="noopener noreferrer">
+                    <a href={data.job_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View Job Posting
                     </a>
                   </Button>
                 )}
 
-                {(selectedApp.workflow_data as any)?.cover_note && (
+                {data?.cover_note && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Cover Note</p>
-                    <p className="text-sm p-3 rounded-lg bg-muted border border-border">
-                      {(selectedApp.workflow_data as any).cover_note}
+                    <p className="text-sm p-3 rounded-lg bg-muted border border-border whitespace-pre-wrap">
+                      {data.cover_note}
                     </p>
                   </div>
                 )}
 
-                {(selectedApp.workflow_data as any)?.connection_request && (
+                {data?.connection_request && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Connection Request</p>
                     <p className="text-sm p-3 rounded-lg bg-muted border border-border">
-                      {(selectedApp.workflow_data as any).connection_request}
+                      {data.connection_request}
                     </p>
                   </div>
                 )}
 
-                {(selectedApp.workflow_data as any)?.notes && (
+                {data?.notes && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Your Notes</p>
-                    <p className="text-sm text-muted-foreground">
-                      {(selectedApp.workflow_data as any).notes}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{data.notes}</p>
                   </div>
                 )}
               </div>
-            )}
+              );
+            })()}
           </DialogContent>
         </Dialog>
       </div>
