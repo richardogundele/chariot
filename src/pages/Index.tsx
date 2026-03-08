@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Search, Brain, PenTool, Play,
-  ArrowRight, Sparkles, Shield, Zap,
+  ArrowRight, Sparkles, Shield,
   Check, Target, Clock, Eye,
 } from "lucide-react";
 
