@@ -237,28 +237,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section id="tech" className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Technology Stack</h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Built on battle-tested open-source tools for reliability and transparency.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {techStack.map((item, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                <Zap className="h-5 w-5 text-primary shrink-0" />
-                <div>
-                  <p className="font-medium text-sm">{item.component}</p>
-                  <p className="text-muted-foreground text-xs">{item.tech}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Roadmap */}
       <section id="roadmap" className="py-24">
