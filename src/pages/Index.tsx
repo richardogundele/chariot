@@ -61,14 +61,6 @@ const Index = () => {
     { number: "04", title: "You approve, agent executes", description: "Review everything at the HITL gate. Type 'yes' to submit — watch it happen in real time." },
   ];
 
-  const techStack = [
-    { component: "Agent Framework", tech: "CrewAI ≥ 0.28" },
-    { component: "LLM Backbone", tech: "Claude Sonnet (Anthropic)" },
-    { component: "Browser Automation", tech: "Playwright + Stealth" },
-    { component: "Scraping", tech: "requests + BeautifulSoup4" },
-    { component: "Runtime", tech: "AWS EC2 (Ubuntu)" },
-    { component: "Environment", tech: "python-dotenv" },
-  ];
 
   const roadmap = [
     {
