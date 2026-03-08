@@ -14,13 +14,204 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_workflows: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_agent: string | null
+          id: string
+          product_id: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          workflow_data: Json | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_agent?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          workflow_data?: Json | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_agent?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          workflow_data?: Json | null
+        }
+        Relationships: []
+      }
+      generated_copy: {
+        Row: {
+          copywriter_style: string | null
+          created_at: string
+          generated_content: Json | null
+          id: string
+          product_description: string | null
+          product_name: string | null
+          user_id: string
+        }
+        Insert: {
+          copywriter_style?: string | null
+          created_at?: string
+          generated_content?: Json | null
+          id?: string
+          product_description?: string | null
+          product_name?: string | null
+          user_id: string
+        }
+        Update: {
+          copywriter_style?: string | null
+          created_at?: string
+          generated_content?: Json | null
+          id?: string
+          product_description?: string | null
+          product_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      generated_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          prompt: string | null
+          style: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          prompt?: string | null
+          style?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          prompt?: string | null
+          style?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          ad_copy: string | null
+          created_at: string
+          deleted: boolean | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ad_copy?: string | null
+          created_at?: string
+          deleted?: boolean | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ad_copy?: string | null
+          created_at?: string
+          deleted?: boolean | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      usage_tracking: {
+        Row: {
+          count: number | null
+          id: string
+          period_start: string
+          usage_type: string
+          user_id: string
+        }
+        Insert: {
+          count?: number | null
+          id?: string
+          period_start?: string
+          usage_type: string
+          user_id: string
+        }
+        Update: {
+          count?: number | null
+          id?: string
+          period_start?: string
+          usage_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          job_title: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_and_increment_usage: {
+        Args: { p_usage_type: string; p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
