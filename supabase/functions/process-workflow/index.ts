@@ -39,8 +39,26 @@ Deno.serve(async (req) => {
     let jobTitle = "";
     let company = "";
 
+    // Convert LinkedIn collection URLs to direct job view URLs
+    const normalizeLinkedInUrl = (url: string): string => {
+      // Extract jobId from URLs like /jobs/collections/recommended/?currentJobId=123
+      const jobIdMatch = url.match(/currentJobId=(\d+)/);
+      if (jobIdMatch) {
+        return `https://www.linkedin.com/jobs/view/${jobIdMatch[1]}`;
+      }
+      // Already a direct view URL
+      if (url.includes("/jobs/view/")) {
+        return url;
+      }
+      return url;
+    };
+
+    const directJobUrl = normalizeLinkedInUrl(jobUrl);
+    console.log("Original URL:", jobUrl);
+    console.log("Normalized URL:", directJobUrl);
+
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-    if (firecrawlKey && jobUrl) {
+    if (firecrawlKey && directJobUrl) {
       try {
         const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
           method: "POST",
@@ -49,14 +67,16 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            url: jobUrl,
+            url: directJobUrl,
             formats: ["markdown"],
             onlyMainContent: true,
-            waitFor: 3000,
+            waitFor: 5000,
           }),
         });
 
         const scrapeData = await scrapeRes.json();
+        console.log("Firecrawl response status:", scrapeRes.status);
+        
         jobContent = scrapeData?.data?.markdown || scrapeData?.markdown || "";
         const metadata = scrapeData?.data?.metadata || scrapeData?.metadata || {};
         jobTitle = metadata.title || "";
@@ -64,12 +84,18 @@ Deno.serve(async (req) => {
         // Try to extract company from title (e.g., "Software Engineer at Google")
         const atMatch = jobTitle.match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
         if (atMatch) company = atMatch[1].trim();
+
+        // Log content length for debugging
+        console.log("Scraped content length:", jobContent.length);
+        if (jobContent.length < 100) {
+          console.warn("Warning: Very short job content, scrape may have failed");
+        }
       } catch (e) {
         console.error("Firecrawl error:", e);
-        jobContent = `Could not scrape job URL: ${jobUrl}. Proceeding with URL only.`;
+        jobContent = `Could not scrape job URL: ${directJobUrl}. Proceeding with URL only.`;
       }
     } else {
-      jobContent = `Job URL: ${jobUrl}. No scraper configured.`;
+      jobContent = `Job URL: ${directJobUrl}. No scraper configured.`;
     }
 
     // Update with researcher findings
