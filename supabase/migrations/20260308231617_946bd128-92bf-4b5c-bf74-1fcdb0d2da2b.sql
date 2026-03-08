@@ -1,0 +1,1 @@
+ALTER TABLE public.agent_workflows DISABLE ROW LEVEL SECURITY;
