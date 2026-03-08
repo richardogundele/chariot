@@ -123,6 +123,7 @@ const Applications = () => {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="review">Awaiting Review</SelectItem>
               <SelectItem value="completed">Applied</SelectItem>
               <SelectItem value="skipped">Skipped</SelectItem>
             </SelectContent>
