@@ -1,20 +1,12 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Search, Brain, PenTool, Play,
-  ArrowRight, Sparkles, Shield, Users, Zap,
-  Check, Target, Clock, Eye, RefreshCw,
+  ArrowRight, Sparkles, Shield, Zap,
+  Check, Target, Clock, Eye,
 } from "lucide-react";
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleWaitlist = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) setSubmitted(true);
-  };
 
   const agents = [
     {
