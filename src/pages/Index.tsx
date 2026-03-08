@@ -166,29 +166,17 @@ const Index = () => {
               An autonomous AI agent that researches jobs, analyses fit, drafts bespoke outreach, and executes applications — with you in full control at every step.
             </p>
 
-            <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8 animate-fade-in" id="waitlist">
-              {!submitted ? (
-                <>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                    className="flex-1 h-12 px-4 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  />
-                  <Button variant="hero" size="lg" type="submit" className="gap-2 h-12">
-                    Get Early Access
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-success/10 border border-success/20 text-success mx-auto">
-                  <Check className="h-5 w-5" />
-                  <span className="font-medium">You're on the list! We'll be in touch.</span>
-                </div>
-              )}
-            </form>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8 animate-fade-in">
+              <Button variant="hero" size="lg" className="gap-2 h-12" asChild>
+                <Link to="/auth">
+                  Get Started
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="h-12" asChild>
+                <Link to="/dashboard">Go to Dashboard</Link>
+              </Button>
+            </div>
 
             <p className="text-sm text-muted-foreground animate-fade-in">
               Built by <strong className="text-foreground">Richard Ogundele</strong> · Private Build v0.1
