@@ -35,6 +35,45 @@ const Applications = () => {
 
   useEffect(() => {
     loadApplications();
+
+    // Realtime subscription for live status updates
+    const setupRealtime = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase
+        .channel("workflow-updates")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "agent_workflows",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            if (payload.eventType === "DELETE") {
+              setApplications((prev) => prev.filter((a) => a.id !== payload.old.id));
+            } else if (payload.eventType === "INSERT") {
+              setApplications((prev) => [payload.new as JobApplication, ...prev]);
+            } else if (payload.eventType === "UPDATE") {
+              setApplications((prev) =>
+                prev.map((a) => (a.id === payload.new.id ? (payload.new as JobApplication) : a))
+              );
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    const cleanup = setupRealtime();
+    return () => {
+      cleanup.then((fn) => fn?.());
+    };
   }, []);
 
   const loadApplications = async () => {
