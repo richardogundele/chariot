@@ -62,7 +62,7 @@ const SubmitJobs = () => {
 
       // Create a workflow for each job URL
       const workflows = validUrls.map((url) => ({
-        user_id: tempUserId,
+        user_id: user.id,
         product_id: "job-application",
         status: "pending",
         current_agent: "researcher",
