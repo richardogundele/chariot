@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Search, Brain, PenTool, Play,
-  ArrowRight, Sparkles, Shield, Zap,
+  ArrowRight, Sparkles, Shield,
   Check, Target, Clock, Eye,
 } from "lucide-react";
 
@@ -61,14 +61,6 @@ const Index = () => {
     { number: "04", title: "You approve, agent executes", description: "Review everything at the HITL gate. Type 'yes' to submit — watch it happen in real time." },
   ];
 
-  const techStack = [
-    { component: "Agent Framework", tech: "CrewAI ≥ 0.28" },
-    { component: "LLM Backbone", tech: "Claude Sonnet (Anthropic)" },
-    { component: "Browser Automation", tech: "Playwright + Stealth" },
-    { component: "Scraping", tech: "requests + BeautifulSoup4" },
-    { component: "Runtime", tech: "AWS EC2 (Ubuntu)" },
-    { component: "Environment", tech: "python-dotenv" },
-  ];
 
   const roadmap = [
     {
@@ -103,7 +95,6 @@ const Index = () => {
           <div className="hidden md:flex items-center gap-8">
             <a href="#agents" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Agents</a>
             <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How it works</a>
-            <a href="#tech" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tech Stack</a>
             <a href="#roadmap" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Roadmap</a>
           </div>
           <div className="flex items-center gap-3">
@@ -246,28 +237,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section id="tech" className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Technology Stack</h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Built on battle-tested open-source tools for reliability and transparency.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {techStack.map((item, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                <Zap className="h-5 w-5 text-primary shrink-0" />
-                <div>
-                  <p className="font-medium text-sm">{item.component}</p>
-                  <p className="text-muted-foreground text-xs">{item.tech}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Roadmap */}
       <section id="roadmap" className="py-24">
