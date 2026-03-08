@@ -1,19 +1,12 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Search, Brain, PenTool, Play,
-  ArrowRight, Sparkles, Shield, Users, Zap,
-  Check, Target, Clock, Eye, RefreshCw,
+  ArrowRight, Sparkles, Shield, Zap,
+  Check, Target, Clock, Eye,
 } from "lucide-react";
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleWaitlist = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) setSubmitted(true);
-  };
 
   const agents = [
     {
@@ -113,9 +106,14 @@ const Index = () => {
             <a href="#tech" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tech Stack</a>
             <a href="#roadmap" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Roadmap</a>
           </div>
-          <Button variant="hero" size="sm" onClick={() => document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })}>
-            Get Early Access
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth">Sign In</Link>
+            </Button>
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
+          </div>
         </div>
       </nav>
 
@@ -160,29 +158,17 @@ const Index = () => {
               An autonomous AI agent that researches jobs, analyses fit, drafts bespoke outreach, and executes applications — with you in full control at every step.
             </p>
 
-            <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8 animate-fade-in" id="waitlist">
-              {!submitted ? (
-                <>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                    className="flex-1 h-12 px-4 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  />
-                  <Button variant="hero" size="lg" type="submit" className="gap-2 h-12">
-                    Get Early Access
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-success/10 border border-success/20 text-success mx-auto">
-                  <Check className="h-5 w-5" />
-                  <span className="font-medium">You're on the list! We'll be in touch.</span>
-                </div>
-              )}
-            </form>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8 animate-fade-in">
+              <Button variant="hero" size="lg" className="gap-2 h-12" asChild>
+                <Link to="/auth">
+                  Get Started
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="h-12" asChild>
+                <Link to="/dashboard">Go to Dashboard</Link>
+              </Button>
+            </div>
 
             <p className="text-sm text-muted-foreground animate-fade-in">
               Built by <strong className="text-foreground">Richard Ogundele</strong> · Private Build v0.1
@@ -323,16 +309,13 @@ const Index = () => {
               </span>
             </h2>
             <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-              Be first in line when the LinkedIn Job Application Agent goes public. Early access members get lifetime access.
+              Sign up and start using the LinkedIn Job Application Agent today.
             </p>
-            <Button
-              variant="hero"
-              size="xl"
-              className="gap-2"
-              onClick={() => document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Join the Waitlist
-              <ArrowRight className="h-5 w-5" />
+            <Button variant="hero" size="xl" className="gap-2" asChild>
+              <Link to="/auth">
+                Get Started Now
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </Button>
           </div>
         </div>
