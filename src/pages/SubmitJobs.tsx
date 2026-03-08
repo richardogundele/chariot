@@ -57,8 +57,8 @@ const SubmitJobs = () => {
 
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      // Temporary: use a placeholder user_id while auth is disabled
+      const tempUserId = "00000000-0000-0000-0000-000000000000";
 
       // Create a workflow for each job URL
       const workflows = validUrls.map((url) => ({
