@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
 
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     if (firecrawlKey && directJobUrl) {
+      // Step 1a: Try direct scrape first
       try {
         const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
           method: "POST",
@@ -75,24 +76,71 @@ Deno.serve(async (req) => {
         });
 
         const scrapeData = await scrapeRes.json();
-        console.log("Firecrawl response status:", scrapeRes.status);
+        console.log("Firecrawl scrape status:", scrapeRes.status);
         
         jobContent = scrapeData?.data?.markdown || scrapeData?.markdown || "";
         const metadata = scrapeData?.data?.metadata || scrapeData?.metadata || {};
         jobTitle = metadata.title || "";
 
-        // Try to extract company from title (e.g., "Software Engineer at Google")
         const atMatch = jobTitle.match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
         if (atMatch) company = atMatch[1].trim();
 
-        // Log content length for debugging
         console.log("Scraped content length:", jobContent.length);
-        if (jobContent.length < 100) {
-          console.warn("Warning: Very short job content, scrape may have failed");
-        }
       } catch (e) {
-        console.error("Firecrawl error:", e);
-        jobContent = `Could not scrape job URL: ${directJobUrl}. Proceeding with URL only.`;
+        console.error("Firecrawl scrape error:", e);
+      }
+
+      // Step 1b: If scrape returned little/no content, fall back to Firecrawl Search
+      if (jobContent.length < 200) {
+        console.log("Scrape returned insufficient content, falling back to Firecrawl Search...");
+        
+        // Extract job ID from URL for search query
+        const jobIdMatch = directJobUrl.match(/\/jobs\/view\/(\d+)/);
+        const jobId = jobIdMatch ? jobIdMatch[1] : "";
+        const searchQuery = `linkedin job posting ${jobId} site:linkedin.com OR site:indeed.com OR site:glassdoor.com`;
+
+        try {
+          const searchRes = await fetch("https://api.firecrawl.dev/v1/search", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${firecrawlKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: searchQuery,
+              limit: 3,
+              scrapeOptions: { formats: ["markdown"] },
+            }),
+          });
+
+          const searchData = await searchRes.json();
+          console.log("Firecrawl search status:", searchRes.status);
+
+          const results = searchData?.data || [];
+          if (results.length > 0) {
+            // Use the first result with meaningful content
+            for (const result of results) {
+              const md = result.markdown || "";
+              if (md.length > 200) {
+                jobContent = md;
+                jobTitle = result.title || jobTitle;
+                // Extract company from search result title
+                const atMatch2 = (result.title || "").match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
+                if (atMatch2) company = atMatch2[1].trim();
+                console.log("Search fallback content length:", jobContent.length);
+                break;
+              }
+            }
+          }
+
+          if (jobContent.length < 200) {
+            console.warn("Search fallback also returned insufficient content");
+            jobContent = `Job URL: ${directJobUrl}. LinkedIn blocked scraping and search returned no results. The AI will work with limited information.`;
+          }
+        } catch (e) {
+          console.error("Firecrawl search error:", e);
+          jobContent = `Job URL: ${directJobUrl}. Both scrape and search failed.`;
+        }
       }
     } else {
       jobContent = `Job URL: ${directJobUrl}. No scraper configured.`;
