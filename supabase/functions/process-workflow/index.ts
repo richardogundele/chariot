@@ -31,6 +31,19 @@ Deno.serve(async (req) => {
     const jobUrl = workflowData.job_url;
     const linkedinProfileUrl = workflowData.linkedin_profile_url || "";
     const notes = workflowData.notes || "";
+    const easyApplyOnly = workflowData.easy_apply_only !== false; // default true
+
+    // ─── Load user's CV and preferences ───
+    const { data: userProfile } = await supabase
+      .from("user_profiles")
+      .select("cv_text, full_name, job_title, job_preferences")
+      .eq("user_id", workflow.user_id)
+      .maybeSingle();
+
+    const cvText = (userProfile as any)?.cv_text || "";
+    const candidateName = (userProfile as any)?.full_name || "";
+    const jobPrefs = (userProfile as any)?.job_preferences || {};
+    const highlightKeywords = jobPrefs.keywords || "";
 
     // ─── STEP 1: RESEARCHER ───
     await updateWorkflow(supabase, workflow_id, "in_progress", "researcher", workflowData);
@@ -38,15 +51,14 @@ Deno.serve(async (req) => {
     let jobContent = "";
     let jobTitle = "";
     let company = "";
+    let isEasyApply = false;
 
     // Convert LinkedIn collection URLs to direct job view URLs
     const normalizeLinkedInUrl = (url: string): string => {
-      // Extract jobId from URLs like /jobs/collections/recommended/?currentJobId=123
       const jobIdMatch = url.match(/currentJobId=(\d+)/);
       if (jobIdMatch) {
         return `https://www.linkedin.com/jobs/view/${jobIdMatch[1]}`;
       }
-      // Already a direct view URL
       if (url.includes("/jobs/view/")) {
         return url;
       }
@@ -77,7 +89,7 @@ Deno.serve(async (req) => {
 
         const scrapeData = await scrapeRes.json();
         console.log("Firecrawl scrape status:", scrapeRes.status);
-        
+
         jobContent = scrapeData?.data?.markdown || scrapeData?.markdown || "";
         const metadata = scrapeData?.data?.metadata || scrapeData?.metadata || {};
         jobTitle = metadata.title || "";
@@ -90,11 +102,10 @@ Deno.serve(async (req) => {
         console.error("Firecrawl scrape error:", e);
       }
 
-      // Step 1b: If scrape returned little/no content, fall back to Firecrawl Search
+      // Step 1b: Fallback to Firecrawl Search if insufficient content
       if (jobContent.length < 200) {
         console.log("Scrape returned insufficient content, falling back to Firecrawl Search...");
-        
-        // Extract job ID from URL for search query
+
         const jobIdMatch = directJobUrl.match(/\/jobs\/view\/(\d+)/);
         const jobId = jobIdMatch ? jobIdMatch[1] : "";
         const searchQuery = `linkedin job posting ${jobId} site:linkedin.com OR site:indeed.com OR site:glassdoor.com`;
@@ -117,25 +128,21 @@ Deno.serve(async (req) => {
           console.log("Firecrawl search status:", searchRes.status);
 
           const results = searchData?.data || [];
-          if (results.length > 0) {
-            // Use the first result with meaningful content
-            for (const result of results) {
-              const md = result.markdown || "";
-              if (md.length > 200) {
-                jobContent = md;
-                jobTitle = result.title || jobTitle;
-                // Extract company from search result title
-                const atMatch2 = (result.title || "").match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
-                if (atMatch2) company = atMatch2[1].trim();
-                console.log("Search fallback content length:", jobContent.length);
-                break;
-              }
+          for (const result of results) {
+            const md = result.markdown || "";
+            if (md.length > 200) {
+              jobContent = md;
+              jobTitle = result.title || jobTitle;
+              const atMatch2 = (result.title || "").match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
+              if (atMatch2) company = atMatch2[1].trim();
+              console.log("Search fallback content length:", jobContent.length);
+              break;
             }
           }
 
           if (jobContent.length < 200) {
             console.warn("Search fallback also returned insufficient content");
-            jobContent = `Job URL: ${directJobUrl}. LinkedIn blocked scraping and search returned no results. The AI will work with limited information.`;
+            jobContent = `Job URL: ${directJobUrl}. LinkedIn blocked scraping and search returned no results.`;
           }
         } catch (e) {
           console.error("Firecrawl search error:", e);
@@ -146,12 +153,42 @@ Deno.serve(async (req) => {
       jobContent = `Job URL: ${directJobUrl}. No scraper configured.`;
     }
 
+    // ─── Detect Easy Apply ───
+    // LinkedIn Easy Apply is indicated by the button text or URL patterns in the scraped content
+    const contentLower = jobContent.toLowerCase();
+    isEasyApply =
+      contentLower.includes("easy apply") ||
+      contentLower.includes("easyapply") ||
+      directJobUrl.includes("linkedin.com/jobs/view/") ||
+      directJobUrl.includes("linkedin.com/jobs/collections/");
+
+    console.log("Is Easy Apply:", isEasyApply);
+
+    // ─── Skip if not Easy Apply and filter is active ───
+    if (easyApplyOnly && !isEasyApply) {
+      const skippedData = {
+        ...workflowData,
+        job_title: jobTitle || "Unknown Position",
+        company: company || "Unknown Company",
+        skip_reason: "No Easy Apply button detected — skipped per your filter settings.",
+        is_easy_apply: false,
+        researcher_completed_at: new Date().toISOString(),
+      };
+      await updateWorkflow(supabase, workflow_id, "skipped", "researcher", skippedData);
+      return new Response(
+        JSON.stringify({ success: true, workflow_id, status: "skipped", reason: "not_easy_apply" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Update with researcher findings
     const researcherData = {
       ...workflowData,
       job_title: jobTitle || "Unknown Position",
       company: company || "Unknown Company",
-      job_content: jobContent.slice(0, 8000), // Keep reasonable size
+      job_content: jobContent.slice(0, 8000),
+      is_easy_apply: isEasyApply,
+      easy_apply_url: directJobUrl,
       researcher_completed_at: new Date().toISOString(),
     };
     await updateWorkflow(supabase, workflow_id, "in_progress", "strategist", researcherData);
@@ -160,16 +197,23 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const strategistPrompt = `You are the Strategist Agent for a job application system. 
+    const cvContext = cvText
+      ? `\n\n## Candidate's Full CV:\n${cvText.slice(0, 4000)}`
+      : "\n\n## Candidate CV: Not provided.";
+
+    const strategistPrompt = `You are the Strategist Agent for a job application system.
 
 Analyse the fit between the candidate and this job posting.
 
 ## Job Posting Content:
-${jobContent.slice(0, 6000)}
+${jobContent.slice(0, 4000)}
 
 ## Job URL: ${jobUrl}
 ## Candidate LinkedIn: ${linkedinProfileUrl}
+## Candidate Name: ${candidateName}
 ## Candidate Notes: ${notes}
+## Keywords to highlight: ${highlightKeywords}
+${cvContext}
 
 Return your analysis using the provided tool.`;
 
@@ -244,20 +288,29 @@ Return your analysis using the provided tool.`;
     };
     await updateWorkflow(supabase, workflow_id, "in_progress", "copywriter", strategistData);
 
-    // ─── STEP 3: COPYWRITER ───
-    const copywriterPrompt = `You are the Copywriter Agent. Write bespoke outreach for this job application.
+    // ─── STEP 3: COPYWRITER (cover note + connection request + tailored CV bullets) ───
+    const cvSection = cvText
+      ? `\n\n## Candidate's CV (use to tailor bullets):\n${cvText.slice(0, 3000)}`
+      : "";
+
+    const copywriterPrompt = `You are the Copywriter Agent for a LinkedIn job application system.
 
 ## Job: ${strategistData.job_title} at ${strategistData.company}
-## Job Content (excerpt): ${jobContent.slice(0, 3000)}
+## Job Requirements (excerpt): ${jobContent.slice(0, 2000)}
 ## Candidate's Top Strengths: ${(fitAnalysis.top_strengths || []).join(", ")}
-## Strategy: ${fitAnalysis.strategy_summary}
+## Application Strategy: ${fitAnalysis.strategy_summary}
 ## Fit Score: ${fitAnalysis.fit_score}/10
 ## Candidate Notes: ${notes}
+## Keywords to emphasise: ${highlightKeywords}
+${cvSection}
 
-Rules:
-- Cover note: MAX 150 words. Sharp, human, zero AI clichés. No "I'm excited to apply" or "passionate about".
-- Connection request: MAX 280 characters. Direct, specific to the role.
-- Sound like a real person, not a bot.`;
+Write ALL three outputs using the provided tool:
+
+1. cover_note: MAX 150 words. Sharp, human, zero AI clichés. No "I'm excited to apply" or "passionate about". Lead with specific value.
+
+2. connection_request: MAX 280 characters. Direct and specific to the role.
+
+3. tailored_cv_bullets: 3-5 bullet points rewritten to match THIS job's requirements. Take the most relevant experiences from the CV and rephrase them to mirror the job description's language and priorities. Use strong action verbs and quantify where possible. These are ready to paste into a CV.`;
 
     const copywriterRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -268,28 +321,37 @@ Rules:
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: "You are an expert copywriter for job applications. Write crisp, human-sounding outreach. No generic phrases." },
+          {
+            role: "system",
+            content:
+              "You are an expert copywriter and career coach. Write crisp, human-sounding outreach and targeted CV bullets. Never use generic phrases. Mirror the job description's language.",
+          },
           { role: "user", content: copywriterPrompt },
         ],
         tools: [
           {
             type: "function",
             function: {
-              name: "draft_outreach",
-              description: "Return the drafted cover note and connection request",
+              name: "draft_application",
+              description: "Return the cover note, connection request, and tailored CV bullets",
               parameters: {
                 type: "object",
                 properties: {
                   cover_note: { type: "string", description: "Cover note, max 150 words" },
                   connection_request: { type: "string", description: "LinkedIn connection request, max 280 chars" },
+                  tailored_cv_bullets: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3-5 tailored CV bullet points matching this specific job",
+                  },
                 },
-                required: ["cover_note", "connection_request"],
+                required: ["cover_note", "connection_request", "tailored_cv_bullets"],
                 additionalProperties: false,
               },
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "draft_outreach" } },
+        tool_choice: { type: "function", function: { name: "draft_application" } },
       }),
     });
 
@@ -305,7 +367,7 @@ Rules:
       const toolCall = copywriterResult.choices?.[0]?.message?.tool_calls?.[0];
       drafts = JSON.parse(toolCall?.function?.arguments || "{}");
     } catch {
-      drafts = { cover_note: "Draft unavailable", connection_request: "Draft unavailable" };
+      drafts = { cover_note: "Draft unavailable", connection_request: "Draft unavailable", tailored_cv_bullets: [] };
     }
 
     // ─── COMPLETE: HITL GATE ───
@@ -313,10 +375,11 @@ Rules:
       ...strategistData,
       cover_note: drafts.cover_note,
       connection_request: drafts.connection_request,
+      tailored_cv_bullets: drafts.tailored_cv_bullets || [],
       copywriter_completed_at: new Date().toISOString(),
     };
 
-    // Status = "review" means waiting for HITL approval
+    // status = "review" → waiting for user HITL approval before applying on LinkedIn
     await updateWorkflow(supabase, workflow_id, "review", "executor", finalData);
 
     return new Response(
