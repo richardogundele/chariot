@@ -2,3 +2,9 @@ project_id = "gezhghditrgewwvnlnvj"
 
 [functions.process-workflow]
 verify_jwt = false
+
+[functions.search-jobs]
+verify_jwt = false
+
+[functions.run-daily-search]
+verify_jwt = false
