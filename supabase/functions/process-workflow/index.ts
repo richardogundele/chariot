@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
     const jobUrl = workflowData.job_url;
     const linkedinProfileUrl = workflowData.linkedin_profile_url || "";
     const notes = workflowData.notes || "";
+    const userProvidedDescription = workflowData.job_description || "";
 
     // ─── STEP 1: RESEARCHER ───
     await updateWorkflow(supabase, workflow_id, "in_progress", "researcher", workflowData);
@@ -39,71 +40,54 @@ Deno.serve(async (req) => {
     let jobTitle = "";
     let company = "";
 
-    // Convert LinkedIn collection URLs to direct job view URLs
-    const normalizeLinkedInUrl = (url: string): string => {
-      // Extract jobId from URLs like /jobs/collections/recommended/?currentJobId=123
-      const jobIdMatch = url.match(/currentJobId=(\d+)/);
-      if (jobIdMatch) {
-        return `https://www.linkedin.com/jobs/view/${jobIdMatch[1]}`;
-      }
-      // Already a direct view URL
-      if (url.includes("/jobs/view/")) {
-        return url;
-      }
-      return url;
-    };
+    if (userProvidedDescription.trim()) {
+      // User pasted the job description — use it directly
+      jobContent = userProvidedDescription;
+      console.log("Using user-provided job description, length:", jobContent.length);
 
-    const directJobUrl = normalizeLinkedInUrl(jobUrl);
-    console.log("Original URL:", jobUrl);
-    console.log("Normalized URL:", directJobUrl);
-
-    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-    if (firecrawlKey && directJobUrl) {
-      try {
-        const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${firecrawlKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            url: directJobUrl,
-            formats: ["markdown"],
-            onlyMainContent: true,
-            waitFor: 5000,
-          }),
-        });
-
-        const scrapeData = await scrapeRes.json();
-        console.log("Firecrawl response status:", scrapeRes.status);
-        
-        jobContent = scrapeData?.data?.markdown || scrapeData?.markdown || "";
-        const metadata = scrapeData?.data?.metadata || scrapeData?.metadata || {};
-        jobTitle = metadata.title || "";
-
-        // Try to extract company from title (e.g., "Software Engineer at Google")
-        const atMatch = jobTitle.match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
-        if (atMatch) company = atMatch[1].trim();
-
-        // Log content length for debugging
-        console.log("Scraped content length:", jobContent.length);
-        if (jobContent.length < 100) {
-          console.warn("Warning: Very short job content, scrape may have failed");
-        }
-      } catch (e) {
-        console.error("Firecrawl error:", e);
-        jobContent = `Could not scrape job URL: ${directJobUrl}. Proceeding with URL only.`;
-      }
+      // Try to extract title/company from first lines
+      const lines = jobContent.split("\n").filter((l: string) => l.trim());
+      if (lines.length > 0) jobTitle = lines[0].slice(0, 200);
+      const atMatch = jobTitle.match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
+      if (atMatch) company = atMatch[1].trim();
     } else {
-      jobContent = `Job URL: ${directJobUrl}. No scraper configured.`;
+      // Fallback: try scraping
+      const normalizeLinkedInUrl = (url: string): string => {
+        const jobIdMatch = url.match(/currentJobId=(\d+)/);
+        if (jobIdMatch) return `https://www.linkedin.com/jobs/view/${jobIdMatch[1]}`;
+        if (url.includes("/jobs/view/")) return url;
+        return url;
+      };
+
+      const directJobUrl = normalizeLinkedInUrl(jobUrl);
+      const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
+      if (firecrawlKey && directJobUrl) {
+        try {
+          const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ url: directJobUrl, formats: ["markdown"], onlyMainContent: true, waitFor: 5000 }),
+          });
+          const scrapeData = await scrapeRes.json();
+          jobContent = scrapeData?.data?.markdown || scrapeData?.markdown || "";
+          const metadata = scrapeData?.data?.metadata || scrapeData?.metadata || {};
+          jobTitle = metadata.title || "";
+          const atMatch = jobTitle.match(/at\s+(.+?)(?:\s*[-|·]|$)/i);
+          if (atMatch) company = atMatch[1].trim();
+        } catch (e) {
+          console.error("Firecrawl error:", e);
+          jobContent = `Could not scrape job URL: ${directJobUrl}.`;
+        }
+      } else {
+        jobContent = `Job URL: ${directJobUrl}. No description provided and no scraper configured.`;
+      }
     }
 
-    // Update with researcher findings
     const researcherData = {
       ...workflowData,
       job_title: jobTitle || "Unknown Position",
       company: company || "Unknown Company",
-      job_content: jobContent.slice(0, 8000), // Keep reasonable size
+      job_content: jobContent.slice(0, 8000),
       researcher_completed_at: new Date().toISOString(),
     };
     await updateWorkflow(supabase, workflow_id, "in_progress", "strategist", researcherData);
