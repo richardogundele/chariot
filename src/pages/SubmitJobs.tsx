@@ -3,55 +3,55 @@ import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Send, LinkIcon, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+interface JobEntry {
+  url: string;
+  description: string;
+}
+
 const SubmitJobs = () => {
-  const [jobUrls, setJobUrls] = useState<string[]>([""]);
+  const [jobs, setJobs] = useState<JobEntry[]>([{ url: "", description: "" }]);
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const addUrl = () => {
-    if (jobUrls.length >= 5) {
+  const addJob = () => {
+    if (jobs.length >= 5) {
       toast({ title: "Maximum 5 jobs", description: "Quality over volume — max 5 applications per batch.", variant: "destructive" });
       return;
     }
-    setJobUrls([...jobUrls, ""]);
+    setJobs([...jobs, { url: "", description: "" }]);
   };
 
-  const removeUrl = (index: number) => {
-    setJobUrls(jobUrls.filter((_, i) => i !== index));
+  const removeJob = (index: number) => {
+    setJobs(jobs.filter((_, i) => i !== index));
   };
 
-  const updateUrl = (index: number, value: string) => {
-    const updated = [...jobUrls];
-    updated[index] = value;
-    setJobUrls(updated);
-  };
-
-  const isValidLinkedInUrl = (url: string) => {
-    return url.includes("linkedin.com/jobs") || url.includes("linkedin.com/in/");
+  const updateJob = (index: number, field: keyof JobEntry, value: string) => {
+    const updated = [...jobs];
+    updated[index] = { ...updated[index], [field]: value };
+    setJobs(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validUrls = jobUrls.filter((url) => url.trim());
+    const validJobs = jobs.filter((j) => j.url.trim());
 
-    if (validUrls.length === 0) {
+    if (validJobs.length === 0) {
       toast({ title: "No URLs", description: "Please add at least one job URL.", variant: "destructive" });
       return;
     }
 
-    const invalidUrls = validUrls.filter((url) => !url.includes("linkedin.com"));
-    if (invalidUrls.length > 0) {
-      toast({ title: "Invalid URLs", description: "All URLs must be LinkedIn job postings.", variant: "destructive" });
+    const missingDescriptions = validJobs.filter((j) => !j.description.trim());
+    if (missingDescriptions.length > 0) {
+      toast({ title: "Missing descriptions", description: "Please paste the job description for each URL.", variant: "destructive" });
       return;
     }
 
@@ -60,14 +60,14 @@ const SubmitJobs = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Create a workflow for each job URL
-      const workflows = validUrls.map((url) => ({
+      const workflows = validJobs.map((job) => ({
         user_id: user.id,
         product_id: "job-application",
         status: "pending",
         current_agent: "researcher",
         workflow_data: {
-          job_url: url,
+          job_url: job.url,
+          job_description: job.description,
           linkedin_profile_url: linkedinUrl,
           notes,
           submitted_at: new Date().toISOString(),
@@ -77,9 +77,8 @@ const SubmitJobs = () => {
       const { data: insertedRows, error } = await supabase.from("agent_workflows").insert(workflows).select();
       if (error) throw error;
 
-      toast({ title: "Jobs submitted!", description: `${validUrls.length} job(s) queued — agents are processing...` });
+      toast({ title: "Jobs submitted!", description: `${validJobs.length} job(s) queued — agents are processing...` });
 
-      // Trigger the agent pipeline for each workflow (fire-and-forget)
       if (insertedRows) {
         for (const row of insertedRows) {
           supabase.functions.invoke("process-workflow", {
@@ -101,7 +100,7 @@ const SubmitJobs = () => {
       <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">Submit Jobs</h1>
-          <p className="text-muted-foreground">Paste LinkedIn job URLs to start the agent pipeline.</p>
+          <p className="text-muted-foreground">Paste LinkedIn job URLs and descriptions to start the agent pipeline.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -120,36 +119,47 @@ const SubmitJobs = () => {
             </CardContent>
           </Card>
 
-          {/* Job URLs */}
+          {/* Job Entries */}
           <Card className="border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg">Target Job URLs</CardTitle>
-                  <CardDescription>Maximum 5 per batch — quality over volume.</CardDescription>
+                  <CardTitle className="text-lg">Target Jobs</CardTitle>
+                  <CardDescription>Paste the URL and the full job description for each role. Max 5 per batch.</CardDescription>
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={addUrl} disabled={jobUrls.length >= 5}>
-                  <Plus className="h-4 w-4 mr-1" /> Add URL
+                <Button type="button" variant="outline" size="sm" onClick={addJob} disabled={jobs.length >= 5}>
+                  <Plus className="h-4 w-4 mr-1" /> Add Job
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {jobUrls.map((url, i) => (
-                <div key={i} className="flex gap-2">
-                  <div className="flex-1 relative">
+            <CardContent className="space-y-6">
+              {jobs.map((job, i) => (
+                <div key={i} className="space-y-3 p-4 rounded-lg border border-border bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">Job {i + 1}</span>
+                    {jobs.length > 1 && (
+                      <Button type="button" variant="ghost" size="sm" onClick={() => removeJob(i)}>
+                        <Trash2 className="h-4 w-4 text-destructive mr-1" />
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  <div className="relative">
                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       className="pl-10"
                       placeholder="https://www.linkedin.com/jobs/view/..."
-                      value={url}
-                      onChange={(e) => updateUrl(i, e.target.value)}
+                      value={job.url}
+                      onChange={(e) => updateJob(i, "url", e.target.value)}
                     />
                   </div>
-                  {jobUrls.length > 1 && (
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeUrl(i)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
+                  <Textarea
+                    placeholder="Paste the full job description here..."
+                    value={job.description}
+                    onChange={(e) => updateJob(i, "description", e.target.value)}
+                    rows={6}
+                    className="text-sm"
+                  />
                 </div>
               ))}
             </CardContent>
